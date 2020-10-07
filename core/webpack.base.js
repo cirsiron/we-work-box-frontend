@@ -8,13 +8,7 @@ let resolve = dir => path.join(__dirname, '..', 'src', dir)
 module.exports = {
   entry: {
     tab: resolve('./tab'),
-    popup: resolve('./popup'),
-    options: resolve('./options'),
-    content: resolve('./content'), 
-    devtools: resolve('./devtools'),
-    background: resolve('./backend'),
-    panel: resolve('./devtools/panel'),
-    inject: resolve('./content/inject'),
+    popup: resolve('./popup')
   },
   output: {
     path: path.join(__dirname, '..', 'build'),
@@ -90,12 +84,8 @@ module.exports = {
     ]
   },
   plugins: [
-    htmlPage('home', 'app', ['tab']),
+    htmlPage('工作台', 'app', ['tab']),
     htmlPage('popup', 'popup', ['popup']),
-    htmlPage('panel', 'panel', ['panel']),
-    htmlPage('devtools', 'devtools', ['devtools']),
-    htmlPage('options', 'options', ['options']),
-    htmlPage('background', 'background', ['background']),
     new CopyWebpackPlugin([{ from: path.join(__dirname, '..', 'static') }]),
     new ChromeReloadPlugin({
       port: 9090,
