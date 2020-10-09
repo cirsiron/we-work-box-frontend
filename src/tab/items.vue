@@ -7,14 +7,14 @@
       v-if="isShow"
       class="item-card my-add-item"
     >
-      <i class="el-icon-plus" @click="handleAddTodo()"></i>
+      <i class="el-icon-plus" @click="handleAddCard()"></i>
     </div>
     <div class="item-card"
       :key="index"
       v-for="(item, index) in itemCardList"
       @click="handleLink(item)"
     >
-      <i class="item-card-icon el-icon-edit" @click="handleEditTodo(item, index)"></i>
+      <i class="item-card-icon el-icon-edit" @click="handleEditCard(item, index)"></i>
       <div class="card-pic">
         <img :src="item.logo || 'https://file.ipadown.com/tophub/assets/images/media/appinn.com.png_120x120.png'" alt="">
       </div>
@@ -34,12 +34,12 @@
   </div>
   <el-dialog
     v-if="itemCardList.length"
-    :title="`${titleName}todo`"
-    :visible.sync="dialogTodoVisible"
+    :title="`${titleName}Card`"
+    :visible.sync="dialogCardVisible"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
   >
-    <el-form ref="form" :model="editTodoForm" label-width="80px" :rules="rules">
+    <el-form ref="form" :model="editCardForm" label-width="80px" :rules="rules">
       <el-form-item class="upload-logo" label="logo" prop="logo">
         <el-upload
           ref="upload0"
@@ -52,17 +52,17 @@
             上传logo
           </el-button>
         </el-upload>
-        <span class="todo-logo-src">{{ editTodoForm.logo }}</span>
+        <span class="Card-logo-src">{{ editCardForm.logo }}</span>
       </el-form-item>
       <el-form-item label="名称" prop="name">
-        <el-input v-model="editTodoForm.name" autocomplete="off"></el-input>
+        <el-input v-model="editCardForm.name" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="链接" prop="link">
-        <el-input v-model="editTodoForm.link" autocomplete="off"></el-input>
+        <el-input v-model="editCardForm.link" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="类型" class="todo-type" prop="type">
+      <el-form-item label="类型" class="Card-type" prop="type">
         <el-select
-          v-model="editTodoForm.type"
+          v-model="editCardForm.type"
           placeholder="请选择类型"
           multiple
           filterable
@@ -77,11 +77,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="描述" prop="description">
-        <el-input type="textarea" v-model="editTodoForm.description" autocomplete="off"></el-input>
+        <el-input type="textarea" v-model="editCardForm.description" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogTodoVisible = false">取 消</el-button>
+      <el-button class="dialog-delete-btn" v-if="isShowDelete" type="danger" @click="fetchDeleteWork">删 除</el-button>
+      <el-button @click="dialogCardVisible = false">取 消</el-button>
       <el-button type="primary" @click="handleConfirmForm">确 定</el-button>
     </div>
   </el-dialog>
@@ -94,7 +95,8 @@
 */
 import md5 from 'md5'
 import { TAB_CONTENT, TAB_CONTENT_LIST } from '../constants'
-import workContents from '../../mock/workContents.js'
+import { mapActions } from 'vuex'
+
 export default {
   props: {
     data: {
@@ -104,11 +106,11 @@ export default {
   },
   data () {
     return {
-      // todo弹窗显示
-      dialogTodoVisible: false,
+      // Card弹窗显示
+      dialogCardVisible: false,
       activeIndex: 1,
-      // todo修改表单数据
-      editTodoForm: {
+      // Card修改表单数据
+      editCardForm: {
         logo: '',
         name: '',
         link: '',
@@ -126,15 +128,15 @@ export default {
           { required: true, message: '请输入描述文字', trigger: 'blur' }
         ]
       },
-      editType: 1,
-      itemCardList: []
+      editType: 1
     }
-  },
-  watch: {
   },
   computed: {
     tabContents () {
       return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
+    },
+    itemCardList () {
+      return this.$store.state.workModule.cards[this.data.value || 0]
     },
     titleName () {
       const type = {
@@ -143,33 +145,40 @@ export default {
       }
       return type[this.editType] || '编辑'
     },
+    isShowDelete () {
+      return +this.editType === 2
+    },
     isShow () {
       return +this.data.value === +TAB_CONTENT['我的'] // 如果是'我的'类型会显示，其他不显示
     }
   },
   mounted () {
-    const { value } = this.data
-    this.itemCardList = workContents[value] || []
   },
   methods: {
+    ...mapActions([
+      'addCard',
+      'removeCard'
+    ]),
     resetForm (editType = 1) {
       this.$refs.form.resetFields()
       this.editType = editType // 添加
     },
-    handleEditTodo (item = {}, index = 1) {
-      this.dialogTodoVisible = true
+    // 新增
+    handleAddCard () {
+      this.dialogCardVisible = true
+      this.$nextTick(() => {
+        const add = 1
+        this.resetForm(add)
+      })
+    },
+    // 编辑Card
+    handleEditCard (item = {}, index = 1) {
+      this.dialogCardVisible = true
       this.activeIndex = index
       this.$nextTick(() => {
         const edit = 2
         this.resetForm(edit)
-        this.editTodoForm = JSON.parse(JSON.stringify(item))
-      })
-    },
-    handleAddTodo () {
-      this.dialogTodoVisible = true
-      this.$nextTick(() => {
-        const add = 1
-        this.resetForm(add)
+        this.editCardForm = JSON.parse(JSON.stringify(item))
       })
     },
     handleUploadImgBefore (files, type) {
@@ -184,21 +193,35 @@ export default {
           fmd.append('hashValue', md5(event.target.result))
           fmd.append('categoryId', categoryId)
           fmd.append('file', files)
-          // this.editTodoForm = fmd
+          // this.editCardForm = fmd
         }
       }
     },
+    // Card: 添加工作项
     fetchAddWork () {
-      this.itemCardList.unshift(JSON.parse(JSON.stringify(this.editTodoForm)))
+      const card = JSON.parse(JSON.stringify(this.editCardForm))
+      this.addCard({
+        tabIndex: this.data.value,
+        card
+      })
     },
+    // Card: 删除工作项
     fetchDeleteWork () {
-      // TODO: 删除工作项
+      this.removeCard({
+        tabIndex: this.data.value,
+        cardIndex: this.activeIndex
+      })
+      this.dialogCardVisible = false
     },
     fetchModifyWork () {
-      this.itemCardList[this.activeIndex] = JSON.parse(JSON.stringify(this.editTodoForm))
+      this.editCard({
+        tabIndex: this.data.value,
+        cardIndex: this.activeIndex,
+        card: JSON.parse(JSON.stringify(this.editCardForm))
+      })
     },
     fetchQueryWork () {
-      // TODO: 查询工作项
+      // Card: 查询工作项
     },
     handleConfirmForm () {
       this.$refs.form.validate((valid) => {
@@ -209,7 +232,7 @@ export default {
           } else {
             this.fetchModifyWork()
           }
-          this.dialogTodoVisible = false
+          this.dialogCardVisible = false
         } else {
           return false
         }
@@ -300,14 +323,22 @@ export default {
   .upload-logo {
     .el-form-item__content {
       display: flex;
-      .todo-logo-src {
+      .Card-logo-src {
         min-width: 100px;
         margin-left: 8px;
       }
     }
   }
 }
-.todo-type {
+
+.dialog-footer {
+  position: relative;
+  .dialog-delete-btn {
+    position: absolute;
+    left: 50px;
+  }
+}
+.Card-type {
   .el-select {
     width: 100%;
   }

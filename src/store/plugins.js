@@ -1,4 +1,4 @@
-import { STORAGE_TODO_KEY, WORK_CONTENTS } from '../constants'
+import { STORAGE_TODO_KEY, WORK_CONTENTS, CARDS } from '../constants'
 
 const plugins = [
   store => {
@@ -9,6 +9,7 @@ const plugins = [
       }
       if (workModule) {
         window.localStorage.setItem(WORK_CONTENTS, JSON.stringify(workModule.contents))
+        window.localStorage.setItem(CARDS, JSON.stringify(workModule.cards))
       }
     })
   }

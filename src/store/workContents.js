@@ -1,7 +1,8 @@
-import { WORK_CONTENTS, CARDS, TAB_CONTENT_LIST } from '../constants'
+import { WORK_CONTENTS, CARDS, TAB_CONTENT_LIST, SHOW_TYPE } from '../constants'
+import workContents from '../../mock/workContents.js'
 
+const filter = ['我的', '推荐']
 const defaultContents = TAB_CONTENT_LIST.map((i) => {
-  const filter = ['我的', '推荐']
   return {
     ...i,
     value: String(i.value),
@@ -11,23 +12,33 @@ const defaultContents = TAB_CONTENT_LIST.map((i) => {
 })
 
 const cardState = {
-  cards: JSON.parse(window.localStorage.getItem(CARDS)) || []
+  cards: JSON.parse(window.localStorage.getItem(CARDS)) || workContents
 }
 
+const comments = JSON.parse(window.localStorage.getItem(WORK_CONTENTS) || JSON.stringify(defaultContents))
+const commentFilter = comments.filter(i => {
+  return +window.localStorage.getItem(SHOW_TYPE) === +i.value || filter.indexOf(i.name) !== -1
+})
 const state = {
-  contents: JSON.parse(window.localStorage.getItem(WORK_CONTENTS) || JSON.stringify(defaultContents)),
+  contents: commentFilter,
   ...cardState
 }
 
 const cardMutations = {
-  addCard (state, card) {
-    state.cards.unshift(card)
+  addCard (state, {
+    card,
+    tabIndex
+  }) {
+    state.cards[tabIndex].unshift(card)
   },
-  removeCard (state, card) {
-    state.cards.splice(state.cards.indexOf(card), 1)
+  removeCard (state, {
+    tabIndex,
+    cardIndex
+  }) {
+    state.cards[tabIndex].splice(cardIndex, 1)
   },
-  editCard (state, { cards }) {
-    // state.cards =
+  editCard (state, { card, tabIndex, cardIndex }) {
+    state.cards[tabIndex].splice(cardIndex, 1, card)
   }
 }
 
@@ -42,11 +53,26 @@ const mutations = {
 }
 
 const cardActions = {
-  addCard ({ commit }, card) {
-    commit('addCard', card)
+  addCard ({ commit }, {
+    tabIndex, card, cardIndex
+  }) {
+    if (!card) {
+      return
+    }
+    commit('addCard', {
+      card,
+      tabIndex,
+      cardIndex
+    })
   },
-  removeCard ({ commit }, card) {
-    commit('removeCard', card)
+  removeCard ({ commit }, {
+    tabIndex,
+    cardIndex
+  }) {
+    commit('removeCard', {
+      tabIndex,
+      cardIndex
+    })
   }
 }
 

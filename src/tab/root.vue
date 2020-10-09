@@ -56,6 +56,8 @@
       :show="showDialog"
       :hide="hideDialog"
     />
+
+    <el-button class="reset-btn" type="info" plain @click="reset">重置页面</el-button>
   </div>
 </template>
 <script>
@@ -63,6 +65,7 @@ import VHeader from './header'
 import Items from './items'
 import TODO from './todo/Home.vue'
 import vDialog from './dialog'
+import { SHOW_TYPE } from '../constants'
 import { mapActions } from 'vuex'
 
 export default {
@@ -85,7 +88,7 @@ export default {
       return this.$store.state.workModule.contents
     },
     isFirstShow () {
-      return !(window.localStorage.getItem('SHOW_TYPE'))
+      return !(window.localStorage.getItem(SHOW_TYPE))
     }
   },
   methods: {
@@ -119,6 +122,21 @@ export default {
           message: '删除成功!'
         })
       })
+    },
+    reset () {
+      this.$confirm('此操作将重置已选择的标签, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 重置 刷新
+        window.localStorage.removeItem(SHOW_TYPE)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        window.location.reload()
+      })
     }
   }
 }
@@ -142,6 +160,15 @@ export default {
           margin-left: 10px;
         }
       }
+    }
+  }
+  .reset-btn {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    opacity: 0.4;
+    &:hover {
+      opacity: 1;
     }
   }
 }
