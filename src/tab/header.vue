@@ -1,7 +1,7 @@
 <template>
   <div class='header-wrapper'>
     <div class="logo">
-      <img src="../assets/imgs/logo.png" width="80px" height="40px" alt="">
+      <img src="../assets/imgs/logo.png" width="40px" height="40px" alt="">
       <div class="todo-btn">
         <el-badge :value="todoCount" class="item">
           <el-button
@@ -18,7 +18,7 @@
         placeholder="输入关键字 回车进行搜索"
         prefix-icon="el-icon-search"
         v-model="searchVal"
-        @change="handleSearch"
+        @input="handleSearch"
       />
     </div>
     <div class="user">
@@ -38,6 +38,7 @@
 * 文件功能描述:头部文件
 */
 import { mapState } from 'vuex'
+import { fetchCard } from '../api'
 
 export default {
   data () {
@@ -59,7 +60,27 @@ export default {
   },
   methods: {
     handleSearch () {
-      console.log(this.searchVal)
+      const val = this.searchVal.replace(/^\s*|\s*$/g, '')
+      if (!val) {
+        this.$emit('setValBool', false)
+        return
+      }
+      this.$emit('setValBool', true)
+      fetchCard.query({
+        q: val
+      }).then((res) => {
+        const data = (res || []).map((item) => {
+          const { _source, _id } = item
+          return {
+            ..._source,
+            id: _id
+          }
+        })
+        this.$emit('setSearchItems', data)
+      }).catch((err) => {
+        this.$emit('setSearchItems', [])
+        console.log(err)
+      })
     },
     handleDrawerTodo () {
       this.$emit('handleDrawerTodo', true)
@@ -75,7 +96,7 @@ export default {
   display: flex;
   height: 80px;
   align-items: center;
-  background: #F3F3F3;
+  background: #fbf7f0;
   .logo, .user {
     display: flex;
     align-items: center;

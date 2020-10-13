@@ -1,7 +1,7 @@
 import { WORK_CONTENTS, CARDS, TAB_CONTENT_LIST, SHOW_TYPE } from '../constants'
 import workContents from '../../mock/workContents.js'
-
-const filter = ['我的', '推荐']
+// this.fetchCards()
+const filter = ['通用', '我的', '推荐']
 const defaultContents = TAB_CONTENT_LIST.map((i) => {
   return {
     ...i,
@@ -19,6 +19,7 @@ const comments = JSON.parse(window.localStorage.getItem(WORK_CONTENTS) || JSON.s
 const commentFilter = comments.filter(i => {
   return +window.localStorage.getItem(SHOW_TYPE) === +i.value || filter.indexOf(i.name) !== -1
 })
+
 const state = {
   contents: commentFilter,
   ...cardState
@@ -72,6 +73,17 @@ const cardActions = {
     commit('removeCard', {
       tabIndex,
       cardIndex
+    })
+  },
+  editCard ({ commit }, {
+    tabIndex,
+    cardIndex,
+    card
+  }) {
+    commit('editCard', {
+      tabIndex,
+      cardIndex,
+      card
     })
   }
 }

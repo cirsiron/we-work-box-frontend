@@ -62,6 +62,9 @@
  * Created by huanghui on 2020/10/04
  * 文件功能描述: 首次弹窗
  */
+import { mapActions } from 'vuex'
+import { TAB_CONTENT_MAP } from '../constants'
+
 export default {
   props: {
     centerDialogVisible: {
@@ -69,7 +72,11 @@ export default {
       default: false
     }
   },
-  computed: {},
+  computed: {
+    contents () {
+      return this.$store.state.workModule.contents
+    }
+  },
   data () {
     return {
       active: null
@@ -77,11 +84,14 @@ export default {
   },
   mounted () {},
   methods: {
+    ...mapActions([
+      'setContents'
+    ]),
     hideDialog () {
-      this.$emit('hideDialog')
+      this.$emit('hide')
     },
     showDialog () {
-      this.$emit('showDialog')
+      this.$emit('show')
     },
     handleChecked (e) {
       const { className } = e.target
@@ -94,7 +104,17 @@ export default {
       if (!this.active) {
         return
       }
-      this.centerDialogVisible = false
+      this.hideDialog()
+      const contents = this.contents
+      this.setContents([
+        ...(contents.slice(0, 1)),
+        {
+          closable: true,
+          name: TAB_CONTENT_MAP[this.active],
+          value: this.active
+        },
+        ...(contents.slice(-1))
+      ])
       window.localStorage.setItem('SHOW_TYPE', this.active)
     }
   }

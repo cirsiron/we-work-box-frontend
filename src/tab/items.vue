@@ -1,37 +1,12 @@
 <template>
 <div class='items-wrapper'>
-  <div class="item-list"
-    v-if="itemCardList.length"
-  >
-    <div
-      v-if="isShow"
-      class="item-card my-add-item"
-    >
-      <i class="el-icon-plus" @click="handleAddCard()"></i>
-    </div>
-    <div class="item-card"
-      :key="index"
-      v-for="(item, index) in itemCardList"
-      @click="handleLink(item)"
-    >
-      <i class="item-card-icon el-icon-edit" @click="handleEditCard(item, index)"></i>
-      <div class="card-pic">
-        <img :src="item.logo || 'https://file.ipadown.com/tophub/assets/images/media/appinn.com.png_120x120.png'" alt="">
-      </div>
-      <div class="card-title">
-        {{ item.name }}
-      </div>
-      <div v-if="item.link" class="card-link">
-        <a :href="item.link" target="_blank">跳转链接</a>
-      </div>
-      <div class="card-description">
-        {{ item.description }}
-      </div>
-    </div>
-  </div>
-  <div v-else class="no-data">
-    暂无数据
-  </div>
+  <Cards
+    :data="data"
+    :card="card"
+    @resetForm="resetForm"
+    @onDialogCardVisible="handleDialogCardVisible"
+    @onEditCardForm="handleEditCardForm"
+  />
   <el-dialog
     v-if="itemCardList.length"
     :title="`${titleName}Card`"
@@ -60,7 +35,7 @@
       <el-form-item label="链接" prop="link">
         <el-input v-model="editCardForm.link" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="类型" class="Card-type" prop="type">
+      <el-form-item class="Card-type"  label="类型" prop="type">
         <el-select
           v-model="editCardForm.type"
           placeholder="请选择类型"
@@ -76,8 +51,8 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="描述" prop="description">
-        <el-input type="textarea" v-model="editCardForm.description" autocomplete="off"></el-input>
+      <el-form-item label="描述" prop="content">
+        <el-input type="textarea" v-model="editCardForm.content" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -94,28 +69,36 @@
 * 文件功能描述:
 */
 import md5 from 'md5'
-import { TAB_CONTENT, TAB_CONTENT_LIST } from '../constants'
 import { mapActions } from 'vuex'
+import { TAB_CONTENT, TAB_CONTENT_LIST } from '../constants'
+import { fetchCard } from '../api'
+import Cards from './cards'
 
 export default {
+  components: {
+    Cards
+  },
   props: {
-    data: {
+    card: {
       type: Object,
-      default: () => {}
+      default: () => ({})
+    },
+    data: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
     return {
       // Card弹窗显示
       dialogCardVisible: false,
-      activeIndex: 1,
       // Card修改表单数据
       editCardForm: {
         logo: '',
         name: '',
         link: '',
         type: [0],
-        description: ''
+        content: ''
       },
       rules: {
         name: [
@@ -124,7 +107,7 @@ export default {
         type: [
           { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
         ],
-        description: [
+        content: [
           { required: true, message: '请输入描述文字', trigger: 'blur' }
         ]
       },
@@ -136,7 +119,7 @@ export default {
       return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
     },
     itemCardList () {
-      return this.$store.state.workModule.cards[this.data.value || 0]
+      return this.data
     },
     titleName () {
       const type = {
@@ -149,7 +132,7 @@ export default {
       return +this.editType === 2
     },
     isShow () {
-      return +this.data.value === +TAB_CONTENT['我的'] // 如果是'我的'类型会显示，其他不显示
+      return +this.card.value === +TAB_CONTENT['我的'] // 如果是'我的'类型会显示，其他不显示
     }
   },
   mounted () {
@@ -157,29 +140,18 @@ export default {
   methods: {
     ...mapActions([
       'addCard',
-      'removeCard'
+      'removeCard',
+      'editCard'
     ]),
     resetForm (editType = 1) {
       this.$refs.form.resetFields()
       this.editType = editType // 添加
     },
-    // 新增
-    handleAddCard () {
-      this.dialogCardVisible = true
-      this.$nextTick(() => {
-        const add = 1
-        this.resetForm(add)
-      })
+    handleDialogCardVisible (bool) {
+      this.dialogCardVisible = bool || false
     },
-    // 编辑Card
-    handleEditCard (item = {}, index = 1) {
-      this.dialogCardVisible = true
-      this.activeIndex = index
-      this.$nextTick(() => {
-        const edit = 2
-        this.resetForm(edit)
-        this.editCardForm = JSON.parse(JSON.stringify(item))
-      })
+    handleEditCardForm (item) {
+      this.editCardForm = item
     },
     handleUploadImgBefore (files, type) {
       const reader = new FileReader()
@@ -201,27 +173,29 @@ export default {
     fetchAddWork () {
       const card = JSON.parse(JSON.stringify(this.editCardForm))
       this.addCard({
-        tabIndex: this.data.value,
+        tabIndex: this.card.value,
         card
+      })
+      fetchCard.add(card).then((res) => {
+        this.$message.success('添加成功！')
+      }).catch((err) => {
+        console.log(err)
       })
     },
     // Card: 删除工作项
     fetchDeleteWork () {
       this.removeCard({
-        tabIndex: this.data.value,
+        tabIndex: this.card.value,
         cardIndex: this.activeIndex
       })
       this.dialogCardVisible = false
     },
     fetchModifyWork () {
       this.editCard({
-        tabIndex: this.data.value,
+        tabIndex: this.card.value,
         cardIndex: this.activeIndex,
         card: JSON.parse(JSON.stringify(this.editCardForm))
       })
-    },
-    fetchQueryWork () {
-      // Card: 查询工作项
     },
     handleConfirmForm () {
       this.$refs.form.validate((valid) => {
@@ -237,13 +211,6 @@ export default {
           return false
         }
       })
-    },
-    handleLink () {
-      // const { link } = item
-      // if (!link) {
-      //   return
-      // }
-      // window.open(link)
     }
   }
 }
@@ -252,74 +219,6 @@ export default {
 .items-wrapper {
   overflow: auto;
   height: calc(100vh - 180px);
-  .no-data {
-    text-align: center;
-    margin: 100px;
-  }
-  .item-list {
-    display: flex;
-    flex-wrap: wrap;
-    .item-card {
-      position: relative;
-      margin-right: 10px;
-      width: 16.6%;
-      min-width: 120px;
-      text-align: center;
-      padding-right: 14px;
-      .item-card-icon {
-        display: none;
-        position: absolute;
-        right: 8px;
-        top: 8px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-      a {
-        text-decoration: none;
-      }
-      &:hover {
-        .item-card-icon {
-          display: block;
-        }
-      }
-    }
-    .card-pic {
-      width: 60px;
-      height: 60px;
-      margin: 30px auto 10px;
-      position: relative;
-      img {
-        width: 80%;
-        padding: 10%;
-        border-radius: 100%;
-        overflow: hidden;
-        border: 1px solid #f3f3f3;
-      }
-    }
-    .my-add-item {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .el-icon-plus {
-        font-size: 36px;
-        color: #a29e9e;
-      }
-    }
-    .card-title {
-
-    }
-    .card-type {
-
-    }
-    .card-link {
-      overflow: hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .card-description {
-
-    }
-  }
   .upload-logo {
     .el-form-item__content {
       display: flex;

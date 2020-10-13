@@ -1,3 +1,5 @@
-import Axios from './axios'
+import { add, remove, modify, query } from './card'
 
-export const checkLogin = () => Axios.get('/api/common/isLogined').then(res => res.data)
+export const fetchCard = {
+  add, remove, modify, query
+}

@@ -7,6 +7,7 @@ export const WORK_CONTENTS = 'WORK_CONTENTS' // 工作项目
 export const CARDS = 'CARDS' // 工作卡片
 
 export const TAB_CONTENT = {
+  '通用': -1,
   '我的': 0, // 我的
   '产品': 1, // 产品
   '设计': 2, // 设计

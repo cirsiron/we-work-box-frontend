@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Axios from 'axios'
+import { HOST } from './config'
 
 const vm = new Vue()
 
@@ -15,7 +16,7 @@ function errorLog (config) {
 }
 
 const api = Axios.create({
-  baseURL: '/',
+  baseURL: HOST || '/',
   withCredentials: true,
   timeout: 20000 // 20s
 })
@@ -33,7 +34,7 @@ api.interceptors.response.use(
   (response) => {
     const { data: res } = response
     const { code } = res || {}
-    if (code === 1) {
+    if (code === 0) {
       return res
     }
     if (code === 5) {
