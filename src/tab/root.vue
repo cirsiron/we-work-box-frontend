@@ -1,5 +1,6 @@
 <template>
   <div class="root-wrapper">
+    <canvas id="canv"></canvas>
     <!-- 头部 -->
     <v-header
       :hasVal="hasVal"
@@ -99,6 +100,7 @@ import TODO from './todo/Home.vue'
 import vDialog from './dialog'
 import { SHOW_TYPE } from '../constants'
 import { fetchCard } from '../api'
+import '../assets/js/canvas'
 
 export default {
   components: {
@@ -226,9 +228,11 @@ export default {
   padding: 0;
   box-sizing: border-box;
 }
+body {
+  background-image: radial-gradient(ellipse farthest-corner at center top, #fff 0%, #e4e4e4 100%);
+}
 .root-wrapper {
   margin-top: 12px;
-  background: #fff;
   .content-wrapper {
     position: relative;
     display: flex;
@@ -239,7 +243,8 @@ export default {
       margin-top: 10px;
       padding: 10px;
       padding-top: 0;
-      box-shadow: 0 10px 40px -10px rgba(0,64,128,.2);
+      box-shadow: 0 10px 40px -10px rgba(0, 64, 128, 0.2);
+      background: rgba(255,255,255,0.8);
       border-radius: 10px;
       .is-closable {
         .el-icon-close {
@@ -305,7 +310,8 @@ export default {
         }
       }
       .card-title {
-
+        font-size: 16px;
+        font-weight: 600;
       }
       .card-type {
 
@@ -334,5 +340,11 @@ export default {
     margin: 100px;
     color: #409EFF;
   }
+}
+#canv {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
 }
 </style>

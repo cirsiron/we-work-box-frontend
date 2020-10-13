@@ -143,7 +143,7 @@ export default {
     .card-pic {
       width: 60px;
       height: 60px;
-      margin: 30px auto 10px;
+      margin: 10px auto 10px;
       position: relative;
       img {
         width: 80%;
@@ -163,7 +163,8 @@ export default {
       }
     }
     .card-title {
-
+      font-size: 16px;
+      font-weight: 600;
     }
     .card-type {
 

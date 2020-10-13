@@ -96,7 +96,7 @@ export default {
   display: flex;
   height: 80px;
   align-items: center;
-  background: #fbf7f0;
+  box-shadow: 0 10px 40px -10px #a2aeb933;
   .logo, .user {
     display: flex;
     align-items: center;
