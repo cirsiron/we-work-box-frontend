@@ -4,11 +4,12 @@
     :data="data"
     :card="card"
     @resetForm="resetForm"
+    @setActiveIndex="handleActiveIndex"
     @onDialogCardVisible="handleDialogCardVisible"
     @onEditCardForm="handleEditCardForm"
   />
   <el-dialog
-    v-if="itemCardList.length"
+    v-if="itemCardList"
     :title="`${titleName}Card`"
     :visible.sync="dialogCardVisible"
     :close-on-click-modal="false"
@@ -27,7 +28,7 @@
             上传logo
           </el-button>
         </el-upload>
-        <span class="Card-logo-src">{{ editCardForm.logo }}</span>
+        <el-input v-model="editCardForm.logo" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="名称" prop="name">
         <el-input v-model="editCardForm.name" autocomplete="off"></el-input>
@@ -71,7 +72,6 @@
 import md5 from 'md5'
 import { mapActions } from 'vuex'
 import { TAB_CONTENT, TAB_CONTENT_LIST } from '../constants'
-import { fetchCard } from '../api'
 import Cards from './cards'
 
 export default {
@@ -100,6 +100,7 @@ export default {
         type: [0],
         content: ''
       },
+      activeIndex: 1,
       rules: {
         name: [
           { required: true, message: '请输入名称或关键字', trigger: 'blur' }
@@ -147,6 +148,9 @@ export default {
       this.$refs.form.resetFields()
       this.editType = editType // 添加
     },
+    handleActiveIndex (index) {
+      this.activeIndex = index
+    },
     handleDialogCardVisible (bool) {
       this.dialogCardVisible = bool || false
     },
@@ -174,27 +178,47 @@ export default {
       const card = JSON.parse(JSON.stringify(this.editCardForm))
       this.addCard({
         tabIndex: this.card.value,
-        card
-      })
-      fetchCard.add(card).then((res) => {
-        this.$message.success('添加成功！')
-      }).catch((err) => {
-        console.log(err)
+        card,
+        callback: () => {
+          setTimeout(() => {
+            this.$emit('fetchCards')
+          }, 1000)
+        }
       })
     },
     // Card: 删除工作项
     fetchDeleteWork () {
+      const { id } = this.data[this.activeIndex]
+      if (!id) {
+        return
+      }
       this.removeCard({
         tabIndex: this.card.value,
-        cardIndex: this.activeIndex
+        cardIndex: this.activeIndex,
+        id,
+        callback: () => {
+          setTimeout(() => {
+            this.$emit('fetchCards')
+          }, 1000)
+        }
       })
       this.dialogCardVisible = false
     },
     fetchModifyWork () {
+      const { id } = this.data[this.activeIndex]
+      if (!id) {
+        return
+      }
       this.editCard({
+        id,
         tabIndex: this.card.value,
         cardIndex: this.activeIndex,
-        card: JSON.parse(JSON.stringify(this.editCardForm))
+        card: JSON.parse(JSON.stringify(this.editCardForm)),
+        callback: () => {
+          setTimeout(() => {
+            this.$emit('fetchCards')
+          }, 1000)
+        }
       })
     },
     handleConfirmForm () {
@@ -227,6 +251,9 @@ export default {
         margin-left: 8px;
       }
     }
+  }
+  .upload-img {
+    margin-right: 10px;
   }
 }
 

@@ -1,6 +1,10 @@
-import { WORK_CONTENTS, CARDS, TAB_CONTENT_LIST, SHOW_TYPE } from '../constants'
+import { CARDS, TAB_CONTENT_LIST, SHOW_TYPE } from '../constants'
 import workContents from '../../mock/workContents.js'
-// this.fetchCards()
+import { fetchCard } from '../api'
+import Vue from 'vue'
+
+const vm = new Vue()
+
 const filter = ['通用', '我的', '推荐']
 const defaultContents = TAB_CONTENT_LIST.map((i) => {
   return {
@@ -15,7 +19,7 @@ const cardState = {
   cards: JSON.parse(window.localStorage.getItem(CARDS)) || workContents
 }
 
-const comments = JSON.parse(window.localStorage.getItem(WORK_CONTENTS) || JSON.stringify(defaultContents))
+const comments = JSON.parse(JSON.stringify(defaultContents))
 const commentFilter = comments.filter(i => {
   return +window.localStorage.getItem(SHOW_TYPE) === +i.value || filter.indexOf(i.name) !== -1
 })
@@ -30,15 +34,24 @@ const cardMutations = {
     card,
     tabIndex
   }) {
+    if (!state.cards[tabIndex]) {
+      state.cards[tabIndex] = []
+    }
     state.cards[tabIndex].unshift(card)
   },
   removeCard (state, {
     tabIndex,
     cardIndex
   }) {
+    if (!state.cards[tabIndex]) {
+      state.cards[tabIndex] = []
+    }
     state.cards[tabIndex].splice(cardIndex, 1)
   },
   editCard (state, { card, tabIndex, cardIndex }) {
+    if (!state.cards[tabIndex]) {
+      state.cards[tabIndex] = []
+    }
     state.cards[tabIndex].splice(cardIndex, 1, card)
   }
 }
@@ -55,35 +68,70 @@ const mutations = {
 
 const cardActions = {
   addCard ({ commit }, {
-    tabIndex, card, cardIndex
+    card,
+    tabIndex,
+    callback
   }) {
     if (!card) {
       return
     }
     commit('addCard', {
       card,
-      tabIndex,
-      cardIndex
+      tabIndex
+    })
+    fetchCard.add(card).then(() => {
+      vm.$message.success('添加成功')
+      callback && callback()
+    }).catch((err) => {
+      vm.$message.error('添加异常')
+      console.log(err)
     })
   },
   removeCard ({ commit }, {
     tabIndex,
-    cardIndex
+    cardIndex,
+    callback,
+    id
   }) {
     commit('removeCard', {
       tabIndex,
       cardIndex
     })
+    if (!id) {
+      return
+    }
+    fetchCard.remove({
+      id
+    }).then(() => {
+      vm.$message.success('删除成功')
+      callback && callback()
+    }).catch((err) => {
+      vm.$message.error('删除异常')
+      console.log(err)
+    })
   },
   editCard ({ commit }, {
     tabIndex,
     cardIndex,
-    card
+    card,
+    id,
+    callback
   }) {
     commit('editCard', {
       tabIndex,
       cardIndex,
       card
+    })
+    // 远程更新
+    fetchCard.modify({
+      id,
+      card
+    }).then((res) => {
+      vm.$message.success('更新成功')
+      callback && callback()
+    }).catch((err) => {
+      vm.$message.success('更新异常')
+      console.log(err)
     })
   }
 }

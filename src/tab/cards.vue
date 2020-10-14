@@ -10,14 +10,14 @@
       >
         <i class="item-card-icon el-icon-edit" @click="handleEditCard(item, index)"></i>
         <div class="card-pic">
-          <img :src="item.logo || 'https://file.ipadown.com/tophub/assets/images/media/appinn.com.png_120x120.png'" alt="">
+          <img :src="item.logo || 'http://vit.hp.guahao-inc.com/favicon.ico'" alt="">
         </div>
         <div class="card-title">
           {{ item.name }}
         </div>
-        <div v-if="item.link" class="card-link">
+        <!-- <div v-if="item.link" class="card-link">
           <a :href="item.link" target="_blank">跳转链接</a>
-        </div>
+        </div> -->
         <div class="card-content">
           {{ item.content }}
         </div>
@@ -28,6 +28,12 @@
       >
         <i class="el-icon-plus" @click="handleAddCard()"></i>
       </div>
+    </div>
+    <div
+      v-else-if="isShow"
+      class="item-card my-add-item"
+    >
+      <i class="el-icon-plus" @click="handleAddCard()"></i>
     </div>
     <div
       v-else
@@ -58,9 +64,7 @@ export default {
     }
   },
   data () {
-    return {
-      activeIndex: 1
-    }
+    return {}
   },
   watch: {
   },
@@ -81,7 +85,7 @@ export default {
     // 编辑Card
     handleEditCard (item = {}, index = 1) {
       this.$emit('onDialogCardVisible', true)
-      this.activeIndex = index
+      this.$emit('setActiveIndex', index)
       this.$nextTick(() => {
         const edit = 2
         this.resetForm(edit)
@@ -116,33 +120,9 @@ export default {
   .item-list {
     display: flex;
     flex-wrap: wrap;
-    .item-card {
-      position: relative;
-      margin-right: 10px;
-      width: 16.6%;
-      min-width: 120px;
-      text-align: center;
-      padding-right: 14px;
-      .item-card-icon {
-        display: none;
-        position: absolute;
-        right: 8px;
-        top: 8px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-      a {
-        text-decoration: none;
-      }
-      &:hover {
-        .item-card-icon {
-          display: block;
-        }
-      }
-    }
     .card-pic {
       width: 60px;
-      height: 60px;
+      height: 46px;
       margin: 10px auto 10px;
       position: relative;
       img {
@@ -153,21 +133,16 @@ export default {
         border: 1px solid #f3f3f3;
       }
     }
-    .my-add-item {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .el-icon-plus {
-        font-size: 36px;
-        color: #a29e9e;
-      }
-    }
     .card-title {
       font-size: 16px;
       font-weight: 600;
     }
     .card-type {
 
+    }
+    .card-content {
+      max-height: 46px;
+      overflow: hidden;
     }
     .card-link {
       overflow: hidden;
@@ -176,6 +151,43 @@ export default {
       a {
         color: #409EFF;
       }
+    }
+  }
+  .item-card {
+    position: relative;
+    margin: 10px;
+    width: 16.6%;
+    height: 153px;
+    min-width: 120px;
+    text-align: center;
+    border-radius: 6px;
+    padding: 0 10px 10px 10px;
+    border: 1px solid #eee;
+    cursor: pointer;
+    .item-card-icon {
+      display: none;
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    a {
+      text-decoration: none;
+    }
+    &:hover {
+      .item-card-icon {
+        display: block;
+      }
+    }
+  }
+  .my-add-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .el-icon-plus {
+      font-size: 36px;
+      color: #a29e9e;
     }
   }
 }

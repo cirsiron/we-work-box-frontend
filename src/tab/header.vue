@@ -8,16 +8,20 @@
             round
             size="small"
             @click="handleDrawerTodo"
-          >今日代办</el-button>
+          >今日待办</el-button>
         </el-badge>
       </div>
     </div>
     <div class="search">
       <el-input
+        id="search-input"
+        ref="input"
         clearable
-        placeholder="输入关键字 回车进行搜索"
+        placeholder="输入关键字进行搜索"
         prefix-icon="el-icon-search"
         v-model="searchVal"
+        @focus="handleFocus"
+        @blur="handleBlur"
         @input="handleSearch"
       />
     </div>
@@ -57,8 +61,26 @@ export default {
     }
   },
   mounted () {
+    window.addEventListener('keydown', (e) => {
+      const { keyCode } = e
+      const ctrlKey = e.ctrlKey || e.metaKey
+      const altKey = e.altKey
+      // alt + space / ctrl + space
+      if ((altKey || ctrlKey) && keyCode === 32) {
+        this.$refs.input.focus()
+      }
+    })
   },
   methods: {
+    handleFocus () {
+      const ele = this.$refs.input.$el
+      ele.className = (ele.className || '').replace(/\s{2}/g, ' ')
+      ele.className = !ele.className ? 'focus' : ele.className + ' ' + 'focus'
+    },
+    handleBlur () {
+      const ele = this.$refs.input.$el
+      ele.className = ele.className.replace(/focus/g, '')
+    },
     handleSearch () {
       const val = this.searchVal.replace(/^\s*|\s*$/g, '')
       if (!val) {

@@ -18,7 +18,7 @@
           @click="handleLink(item)"
         >
           <div class="card-pic">
-            <img :src="item.logo || 'https://file.ipadown.com/tophub/assets/images/media/appinn.com.png_120x120.png'" alt="">
+            <img :src="item.logo || 'http://vit.hp.guahao-inc.com/favicon.ico'" alt="">
           </div>
           <div class="card-title">
             {{ item.name }}
@@ -50,7 +50,7 @@
           :name="item.value"
           :closable="item.closable"
         >
-          <Items :card="item" :data="cardAllItems[item.value]"/>
+          <Items :card="item" :data="cardAllItems[item.value]" @fetchCards="fetchCards"/>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -130,6 +130,30 @@ export default {
   },
   mounted () {
     this.fetchCards()
+    // const KeyMap = {
+    //   37: 'left',
+    //   38: 'top',
+    //   39: 'right',
+    //   40: 'bottom'
+    // }
+    // window.addEventListener('keydown', (e) => {
+    //   const { keyCode } = e
+    //   // const input = document.querySelector('#search-input')
+    //   // input.parentNode.className = input.parentNode.className.replace(/focus/, '')
+    //   const ctrlKey = e.ctrlKey || e.metaKey
+    //   switch (ctrlKey && KeyMap[keyCode]) {
+    //     case 'left':
+    //       break
+    //     case 'top':
+    //       break
+    //     case 'right':
+    //       break
+    //     case 'bottom':
+    //       break
+    //     default:
+    //       break
+    //   }
+    // })
   },
   methods: {
     ...mapActions([
@@ -171,6 +195,8 @@ export default {
       fetchCard.query().then((res = []) => {
         const cards = this.transformCards(res)
         this.cardAllItems = cards || {}
+        // 本地同步存储
+        window.localStorage.setItem('CARDS', JSON.stringify(this.cardAllItems))
       }).catch((err) => {
         console.log(err)
       })
@@ -246,6 +272,9 @@ body {
       box-shadow: 0 10px 40px -10px rgba(0, 64, 128, 0.2);
       background: rgba(255,255,255,0.8);
       border-radius: 10px;
+      .el-tabs__content {
+        padding: 0 16px;
+      }
       .is-closable {
         .el-icon-close {
           margin-left: 10px;
@@ -263,13 +292,18 @@ body {
       padding-top: 0;
       box-shadow: 0 10px 40px -10px rgba(0, 64, 128, 0.2);
       border-radius: 10px;
+      background: rgba(255, 255, 255, 0.8);
       .item-card {
         position: relative;
-        margin-right: 10px;
+        margin: 10px;
         width: 16.6%;
+        height: 153px;
         min-width: 120px;
         text-align: center;
-        padding-right: 14px;
+        border-radius: 6px;
+        padding: 0 10px 10px 10px;
+        border: 1px solid #eee;
+        cursor: pointer;
         .item-card-icon {
           display: none;
           position: absolute;
@@ -289,7 +323,7 @@ body {
       }
       .card-pic {
         width: 60px;
-        height: 60px;
+        height: 46px;
         margin: 30px auto 10px;
         position: relative;
         img {
@@ -315,6 +349,10 @@ body {
       }
       .card-type {
 
+      }
+      .card-content {
+        max-height: 46px;
+        overflow: hidden;
       }
       .card-link {
         overflow: hidden;

@@ -107,7 +107,7 @@ export default {
       this.hideDialog()
       const contents = this.contents
       this.setContents([
-        ...(contents.slice(0, 1)),
+        ...(contents.slice(0, 2)),
         {
           closable: true,
           name: TAB_CONTENT_MAP[this.active],
