@@ -15,7 +15,7 @@
         <div class="item-card"
           :key="index"
           v-for="(item, index) in searchItems"
-          @click="handleLink(item)"
+          @click="handleLink(item.link)"
         >
           <div class="card-pic">
             <img :src="item.logo || 'http://vit.hp.guahao-inc.com/favicon.ico'" alt="">
@@ -23,9 +23,9 @@
           <div class="card-title">
             {{ item.name }}
           </div>
-          <div v-if="item.link" class="card-link">
+          <!-- <div v-if="item.link" class="card-link">
             <a :href="item.link" target="_blank">跳转链接</a>
-          </div>
+          </div> -->
           <div class="card-content">
             {{ item.content }}
           </div>
@@ -243,7 +243,10 @@ export default {
         window.location.reload()
       })
     },
-    handleLink () {
+    handleLink (link) {
+      if (/http:/.test(link)) {
+        window.open(link)
+      }
     }
   }
 }
@@ -304,6 +307,9 @@ body {
         padding: 0 10px 10px 10px;
         border: 1px solid #eee;
         cursor: pointer;
+        &:hover {
+          border: 1px solid rgba(102,177,255,0.5);
+        }
         .item-card-icon {
           display: none;
           position: absolute;

@@ -6,8 +6,10 @@
       <div class="item-card"
         :key="index"
         v-for="(item, index) in itemCardList"
-        @click="handleLink(item)"
       >
+        <div class="card-mask" 
+          @click="handleLink(item.link)"
+        ></div>
         <i class="item-card-icon el-icon-edit" @click="handleEditCard(item, index)"></i>
         <div class="card-pic">
           <img :src="item.logo || 'http://vit.hp.guahao-inc.com/favicon.ico'" alt="">
@@ -100,12 +102,10 @@ export default {
         this.resetForm(add)
       })
     },
-    handleLink () {
-      // const { link } = item
-      // if (!link) {
-      //   return
-      // }
-      // window.open(link)
+    handleLink (link) {
+      if (/http:/.test(link)) {
+        window.open(link)
+      }
     }
   }
 }
@@ -163,7 +163,18 @@ export default {
     border-radius: 6px;
     padding: 0 10px 10px 10px;
     border: 1px solid #eee;
-    cursor: pointer;
+    &:hover {
+      border: 1px solid rgba(102,177,255,0.5);
+    }
+    .card-mask {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80%;
+      z-index: 1;
+      cursor: pointer;
+    }
     .item-card-icon {
       display: none;
       position: absolute;

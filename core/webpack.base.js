@@ -1,6 +1,6 @@
 const path = require('path')
-const webpack = require('webpack')
 const ChromeReloadPlugin  = require('wcer')
+const webpack = require('webpack')
 const {cssLoaders, htmlPage} = require('./tools')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
@@ -8,7 +8,8 @@ let resolve = dir => path.join(__dirname, '..', 'src', dir)
 module.exports = {
   entry: {
     tab: resolve('./tab'),
-    popup: resolve('./popup')
+    popup: resolve('./popup'),
+    inject: resolve('./content')
   },
   output: {
     path: path.join(__dirname, '..', 'build'),
@@ -84,13 +85,29 @@ module.exports = {
     ]
   },
   plugins: [
-    htmlPage('工作台', 'app', ['tab']),
+    htmlPage('工作台', 'app', ['manifest', 'vendor', 'tab']),
     htmlPage('popup', 'popup', ['popup']),
     new CopyWebpackPlugin([{ from: path.join(__dirname, '..', 'static') }]),
     new ChromeReloadPlugin({
       port: 9090,
       manifest: path.join(__dirname, '..', 'src', 'manifest.js')
     }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: function (module) {
+        return (
+          module.resource &&
+          /\.js$/.test(module.resource) &&
+          module.resource.indexOf(
+            path.join(__dirname, '../node_modules')
+          ) === 0
+        )
+      }
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'manifest',
+      chunks: ['vendor', 'tab']
+    })
   ],
   performance: { hints: false },
 }
