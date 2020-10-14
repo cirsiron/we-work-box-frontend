@@ -61,17 +61,25 @@ export default {
     }
   },
   mounted () {
+    this.focusInput()
     window.addEventListener('keydown', (e) => {
       const { keyCode } = e
       const ctrlKey = e.ctrlKey || e.metaKey
       const altKey = e.altKey
       // alt + space / ctrl + space
       if ((altKey || ctrlKey) && keyCode === 32) {
-        this.$refs.input.focus()
+        this.focusInput()
       }
     })
   },
   methods: {
+    focusInput () {
+      try {
+        this.$refs.input.focus()
+      } catch (e) {
+        console.log(e)
+      }
+    },
     handleFocus () {
       const ele = this.$refs.input.$el
       ele.className = (ele.className || '').replace(/\s{2}/g, ' ')
