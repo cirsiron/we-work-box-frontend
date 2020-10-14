@@ -122,6 +122,7 @@ export default {
   .item-list {
     display: flex;
     flex-wrap: wrap;
+    justify-content: flex-start;
     .card-pic {
       width: 60px;
       height: 46px;
@@ -137,7 +138,9 @@ export default {
     }
     .card-title {
       font-size: 16px;
+      height: 40px;
       font-weight: 600;
+      line-height: 40px;
     }
     .card-type {
 
@@ -157,10 +160,11 @@ export default {
   }
   .item-card {
     position: relative;
+    flex: 1;
     margin: 10px;
-    width: 16.6%;
-    height: 153px;
-    min-width: 120px;
+    max-width: 160px;
+    height: 180px;
+    min-width: 140px;
     text-align: center;
     border-radius: 6px;
     padding: 0 10px 10px 10px;

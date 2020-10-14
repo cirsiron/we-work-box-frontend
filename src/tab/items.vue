@@ -270,21 +270,4 @@ export default {
   }
 }
 
-@media (max-width: 1024px) {
-  .items-wrapper {
-    .item-list {
-      .item-card {
-        width: 20%;
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .items-wrapper {
-    .item-card {
-      width: 25%;
-    }
-  }
-}
 </style>

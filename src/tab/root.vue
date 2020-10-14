@@ -1,6 +1,5 @@
 <template>
   <div class="root-wrapper">
-    <canvas id="canv"></canvas>
     <!-- 头部 -->
     <v-header
       :hasVal="hasVal"
@@ -100,7 +99,6 @@ import TODO from './todo/Home.vue'
 import vDialog from './dialog'
 import { SHOW_TYPE } from '../constants'
 import { fetchCard } from '../api'
-import '../assets/js/canvas'
 
 export default {
   components: {
@@ -299,7 +297,7 @@ body {
       .item-card {
         position: relative;
         margin: 10px;
-        width: 16.6%;
+        width: 20%;
         height: 153px;
         min-width: 120px;
         text-align: center;
@@ -342,10 +340,12 @@ body {
       }
       .card-title {
         font-size: 16px;
+        height: 40px;
         font-weight: 600;
+        line-height: 40px;
       }
       .card-content {
-        max-height: 46px;
+        max-height: 66px;
         overflow: hidden;
       }
       .card-link {
