@@ -103,7 +103,7 @@ export default {
       })
     },
     handleLink (link) {
-      if (/http:/.test(link)) {
+      if (/http/.test(link)) {
         window.open(link)
       }
     }
