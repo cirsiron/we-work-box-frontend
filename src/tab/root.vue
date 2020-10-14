@@ -58,7 +58,7 @@
       :withHeader="false"
       :visible.sync="drawerTodoShow"
       direction="ltr"
-      size="60%"
+      size="56%"
     >
       <TODO />
     </el-drawer>
@@ -289,17 +289,20 @@ body {
       height: calc(100vh - 114px);
       max-width: 960px;
       margin-top: 10px;
-      padding: 10px;
-      padding-top: 0;
+      padding: 10px 30px;
+      padding-top: 16px;
       box-shadow: 0 10px 40px -10px rgba(0, 64, 128, 0.2);
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.8);
+      align-content: flex-start;
       .item-card {
         position: relative;
+        flex: 1;
+        flex-grow: 1;
         margin: 10px;
-        width: 20%;
-        height: 153px;
-        min-width: 120px;
+        max-width: 160px;
+        height: 180px;
+        min-width: 140px;
         text-align: center;
         border-radius: 6px;
         padding: 0 10px 10px 10px;

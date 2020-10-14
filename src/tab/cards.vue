@@ -161,6 +161,7 @@ export default {
   .item-card {
     position: relative;
     flex: 1;
+    flex-grow: 1;
     margin: 10px;
     max-width: 160px;
     height: 180px;
