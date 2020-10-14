@@ -27,15 +27,17 @@
       <div
         v-if="isShow"
         class="item-card my-add-item"
+        @click="handleAddCard()"
       >
-        <i class="el-icon-plus" @click="handleAddCard()"></i>
+        <i class="el-icon-plus"></i>
       </div>
     </div>
     <div
       v-else-if="isShow"
       class="item-card my-add-item"
+      @click="handleAddCard()"
     >
-      <i class="el-icon-plus" @click="handleAddCard()"></i>
+      <i class="el-icon-plus"></i>
     </div>
     <div
       v-else
@@ -164,7 +166,7 @@ export default {
     padding: 0 10px 10px 10px;
     border: 1px solid #eee;
     &:hover {
-      border: 1px solid rgba(102,177,255,0.5);
+      box-shadow: 0 2px 10px 0 rgba(0,0,0,.15);
     }
     .card-mask {
       position: absolute;
@@ -196,6 +198,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     .el-icon-plus {
       font-size: 36px;
       color: #a29e9e;

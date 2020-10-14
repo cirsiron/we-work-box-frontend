@@ -308,7 +308,7 @@ body {
         border: 1px solid #eee;
         cursor: pointer;
         &:hover {
-          border: 1px solid rgba(102,177,255,0.5);
+          box-shadow: 0 2px 10px 0 rgba(0,0,0,.15);
         }
         .item-card-icon {
           display: none;
@@ -340,21 +340,9 @@ body {
           border: 1px solid #f3f3f3;
         }
       }
-      .my-add-item {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        .el-icon-plus {
-          font-size: 36px;
-          color: #a29e9e;
-        }
-      }
       .card-title {
         font-size: 16px;
         font-weight: 600;
-      }
-      .card-type {
-
       }
       .card-content {
         max-height: 46px;
