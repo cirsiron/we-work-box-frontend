@@ -97,8 +97,9 @@ import Items from './items'
 import Cards from './cards'
 import TODO from './todo/Home.vue'
 import vDialog from './dialog'
-import { SHOW_TYPE } from '../constants'
+import { SHOW_TYPE, LOCAL_MINE_TAB_ITEMS, CARDS } from '../constants'
 import { fetchCard } from '../api'
+import { storage } from '../utils'
 
 export default {
   components: {
@@ -192,9 +193,14 @@ export default {
     fetchCards () {
       fetchCard.query().then((res = []) => {
         const cards = this.transformCards(res)
+        const localMineItems = storage.get(LOCAL_MINE_TAB_ITEMS) || []
+        cards[0] = [
+          ...cards[0],
+          ...localMineItems
+        ]
         this.cardAllItems = cards || {}
         // 本地同步存储
-        window.localStorage.setItem('CARDS', JSON.stringify(this.cardAllItems))
+        storage.set(CARDS, this.cardAllItems)
       }).catch((err) => {
         console.log(err)
       })

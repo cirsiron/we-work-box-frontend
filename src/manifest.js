@@ -21,12 +21,12 @@ module.exports = {
     default_title: '工作台',
     default_popup: 'pages/popup.html'
   },
-  content_scripts: [{
-    js: [ 'js/inject.js' ],
-    run_at: 'document_end',
-    matches: ['<all_urls>'],
-    all_frames: true
-  }],
+  // content_scripts: [{
+  //   js: [ 'js/popup.js' ],
+  //   run_at: 'document_end',
+  //   matches: ['<all_urls>'],
+  //   all_frames: true
+  // }],
   // 覆盖浏览器默认页面
   chrome_url_overrides: {
     newtab: 'pages/app.html'

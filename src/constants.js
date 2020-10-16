@@ -30,3 +30,5 @@ export const TAB_CONTENT_MAP = Object.fromEntries(
       return [val, key]
     })
 )
+// 本地存储的‘我的’相关数据字段名
+export const LOCAL_MINE_TAB_ITEMS = 'LOCAL_MINE_TAB_ITEMS'

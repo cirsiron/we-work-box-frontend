@@ -1,7 +1,9 @@
-import { CARDS, TAB_CONTENT_LIST, SHOW_TYPE } from '../constants'
+
+import Vue from 'vue'
+import { CARDS, TAB_CONTENT_LIST, SHOW_TYPE, LOCAL_MINE_TAB_ITEMS } from '../constants'
 import workContents from '../../mock/workContents.js'
 import { fetchCard } from '../api'
-import Vue from 'vue'
+import { storage } from '../utils'
 
 const vm = new Vue()
 
@@ -79,7 +81,21 @@ const cardActions = {
       card,
       tabIndex
     })
-    fetchCard.add(card).then(() => {
+    // 筛选出 我的 项目不进行提交 直接存储本地
+    let { type = [] } = card
+    if (type.includes(0)) {
+      let mineTabItems = storage.get(LOCAL_MINE_TAB_ITEMS)
+      if (!mineTabItems) {
+        mineTabItems = []
+      }
+      mineTabItems.push(card)
+      storage.set(LOCAL_MINE_TAB_ITEMS, mineTabItems)
+      type.splice(type.indexOf(0), 1)
+    }
+    fetchCard.add({
+      ...card,
+      type
+    }).then(() => {
       vm.$message.success('添加成功')
       callback && callback()
     }).catch((err) => {
