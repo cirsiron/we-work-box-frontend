@@ -4,7 +4,7 @@
     <div class="todo-title-wrapper">
       <div class="todos-title">待办事项</div>
       <el-progress class="todo-done-progress" :text-inside="true" :stroke-width="6" status="success" :percentage="percentage"></el-progress>
-      <el-input placeholder="请输入新todo"
+      <el-input placeholder="请输入新todo，点击enter添加"
         size="large"
         v-model="newTodo"
         v-on:keyup.enter.native="handleAddNewTodo"
@@ -15,18 +15,34 @@
       </el-input>
     </div>
   </div>
-  <div class="todo-flex ">
+  <div class="todo-flex" v-if="todos.length">
     <div class="todo-list-wrapper">
       <div class="todo-list">
         <div class="todo-item-wrapper" :key="index" v-for="(item, index) in todos">
             <div class="todo-item">
               <el-checkbox :value="item.done" @change="toggleTodo(item)"></el-checkbox>
               <el-input :value="item.text" @input="(val) => editTodo({ todo: item, value: val })"></el-input>
-              <i class="el-icon-delete" @click="removeTodo(item)"></i>
+              <el-date-picker
+                class="todo-date-picker"
+                v-model="item.rangeDate"
+                @change="(date) => handleEditDateTodo({item, date})"
+                type="datetimerange"
+                value-format="yyyy-MM-dd"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="截止日期"
+                align="right">
+              </el-date-picker>
             </div>
+        </div>
+        <div class="edit-todo-button" style="">
+          <el-button type="text" @click="removeCheckedTodo">清空已完成</el-button>
         </div>
       </div>
     </div>
+  </div>
+  <div v-else class="no-data">
+    暂无todo，请添加
   </div>
 </div>
 </template>
@@ -47,6 +63,7 @@ const filters = {
 export default {
   data () {
     return {
+      showedTods: [],
       visibility: this.filter,
       newTodo: '' // 新todo内容
     }
@@ -87,7 +104,7 @@ export default {
   methods: {
     ...mapActions([
       'clearCompleted',
-      'removeTodo',
+      'removeCheckedTodo',
       'toggleTodo',
       'editTodo',
       'checkedAllTodos'
@@ -98,6 +115,9 @@ export default {
         this.$store.dispatch('addTodo', text)
       }
       this.newTodo = ''
+    },
+    handleEditDateTodo ({ item, date }) {
+      this.editTodo({todo: item, rangeDate: date})
     }
   },
   filters: {
@@ -114,15 +134,11 @@ export default {
   }
   .todo-title-wrapper {
     width: 80%;
-    .el-input-group,
-    .el-progress {
-      width: 93%;
-    }
     .todos-title {
       margin: 30px 0;
-      color: #4dba87 !important;
+      color: #409eff !important;
       letter-spacing: -0.02em !important;
-      caret-color: #4dba87 !important;
+      caret-color: #409eff !important;
       font-size: 46px !important;
       text-align: center;
       opacity: 0.6;
@@ -133,10 +149,14 @@ export default {
   }
   .todo-list-wrapper {
     width: 80%;
-    margin-top: 20px;
-    padding-left: 21px;
     height: calc(100vh - 242px);
     overflow: auto;
+    .todo-list {
+      margin-top: 10px;
+      border-radius: 4px;
+      padding: 21px 21px 0 21px;
+      border: 1px solid #DCDFE6;
+    }
   }
   .todo-done-progress {
     opacity: 0.4;
@@ -150,6 +170,16 @@ export default {
     position: relative;
     display: flex;
     margin-bottom: 8px;
+    .todo-date-picker {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 220px;
+      padding: 3px;
+      .el-range-separator {
+        width: 15%;
+      }
+    }
     .el-checkbox {
       display: flex;
       align-items: center;
@@ -170,6 +200,20 @@ export default {
       .el-icon-delete {
         display: flex;
       }
+    }
+  }
+  .edit-todo-button {
+    color: #777;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    .el-button {
+      float: right;
+      position: relative;
+      line-height: 34px;
+      padding: 0;
+      text-decoration: none;
+      cursor: pointer;
     }
   }
 }

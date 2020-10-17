@@ -70,7 +70,6 @@
       size="40%"
     >
       <el-calendar>
-        <!-- 这里使用的是 2.5 slot 语法，对于新项目请使用 2.6 slot 语法-->
         <template
           slot="dateCell"
           slot-scope="{ data }">
@@ -86,7 +85,8 @@
       @show="showDialog"
       @hide="hideDialog"
     />
-
+    <input type="file" ref="fileElem" style="display:none" @change="getBookmarkData">
+    <el-button ref="fileSelect" class="bookmark-btn" type="info" plain @click="importBookmark">上传书签</el-button>
     <el-button class="reset-btn" type="info" plain @click="reset">重置页面</el-button>
   </div>
 </template>
@@ -129,30 +129,6 @@ export default {
   },
   mounted () {
     this.fetchCards()
-    // const KeyMap = {
-    //   37: 'left',
-    //   38: 'top',
-    //   39: 'right',
-    //   40: 'bottom'
-    // }
-    // window.addEventListener('keydown', (e) => {
-    //   const { keyCode } = e
-    //   // const input = document.querySelector('#search-input')
-    //   // input.parentNode.className = input.parentNode.className.replace(/focus/, '')
-    //   const ctrlKey = e.ctrlKey || e.metaKey
-    //   switch (ctrlKey && KeyMap[keyCode]) {
-    //     case 'left':
-    //       break
-    //     case 'top':
-    //       break
-    //     case 'right':
-    //       break
-    //     case 'bottom':
-    //       break
-    //     default:
-    //       break
-    //   }
-    // })
   },
   methods: {
     ...mapActions([
@@ -251,6 +227,44 @@ export default {
       if (/http/.test(link)) {
         window.open(link)
       }
+    },
+    importBookmark () {
+      this.$refs.fileElem.click()
+    },
+    getBookmarkData ({ target }) {
+      if (!target.files[0]) {
+        return
+      }
+      const reader = new FileReader()
+      reader.readAsText(target.files[0], 'utf8')
+      reader.onload = () => {
+        console.log()
+        if (!reader.result) {
+          return
+        }
+        const markbooks = this.parserBookbarkToJson(reader.result)
+        console.log(markbooks)
+      }
+    },
+    matchAll (reg, str) {
+      let arr = []
+      let res = reg.exec(str)
+
+      if (reg.global) {
+        while (res) {
+          console.log(res)
+          arr.push(res)
+          res = reg.exec(str)
+        }
+      } else {
+        arr.push(res)
+      }
+      return arr
+    },
+    parserBookbarkToJson (html) {
+      const reg = /<DT><A (HREF="\S+")\s+[\S\s]+?(ICON="[\S\s]+?")?>((?:[\W\w]+?))<\/A>/g
+      const hrefs = this.matchAll(reg, html)
+      return hrefs
     }
   }
 }
@@ -371,6 +385,15 @@ body {
     position: fixed;
     right: 10px;
     bottom: 10px;
+    opacity: 0.4;
+    &:hover {
+      opacity: 1;
+    }
+  }
+  .bookmark-btn {
+    position: fixed;
+    right: 10px;
+    bottom: 60px;
     opacity: 0.4;
     &:hover {
       opacity: 1;

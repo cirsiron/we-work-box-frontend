@@ -1,7 +1,10 @@
 <template>
   <div class='header-wrapper'>
     <div class="logo">
-      <img src="../assets/imgs/logo.png" width="40px" height="40px" alt="">
+      <div class="logo-img">
+        <img src="../assets/imgs/logo.png" width="40px" height="40px" alt="">
+        <el-button size="mini" round @click="handleExport">导出</el-button>
+      </div>
       <div class="todo-btn">
         <el-badge :value="todoCount" class="item">
           <el-button
@@ -42,7 +45,10 @@
 * 文件功能描述:头部文件
 */
 import { mapState } from 'vuex'
+import { saveAs } from 'file-saver'
+import { storage } from '../utils'
 import { fetchCard } from '../api'
+import jsonFormat from 'json-format'
 
 export default {
   data () {
@@ -117,6 +123,21 @@ export default {
     },
     handleDrawerCalendar () {
       this.$emit('handleDrawerCalendar', true)
+    },
+    // 数据导出
+    handleExport () {
+      let data = {}
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i) // 获取本地存储的Key
+        const item = storage.get(key)
+        data[key] = item
+      }
+      const dataFormated = jsonFormat(data, {
+        type: 'space',
+        size: 2
+      })
+      const blob = new Blob([dataFormated], { type: 'text/json;charset=utf-8' })
+      saveAs(blob, '导出数据.json')
     }
   }
 }
@@ -127,6 +148,22 @@ export default {
   height: 80px;
   align-items: center;
   box-shadow: 0 10px 40px -10px #a2aeb933;
+  .logo-img {
+    display: flex;
+    position: relative;
+    text-align: center;
+    &:hover {
+      .el-button {
+        display: block;
+      }
+    }
+    .el-button {
+      display: none;
+      position: absolute;
+      top: 41px;
+      left: -7px;
+    }
+  }
   .logo, .user {
     display: flex;
     align-items: center;

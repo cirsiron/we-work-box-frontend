@@ -11,6 +11,9 @@ const mutations = {
   removeTodo (state, todo) {
     state.todos.splice(state.todos.indexOf(todo), 1)
   },
+  removeCheckedTodo (state, unchecked) {
+    state.todos = unchecked
+  },
   editTodo (state, { todo, text = todo.text, done = todo.done }) {
     todo.text = text
     todo.done = done
@@ -30,16 +33,22 @@ const actions = {
     commit('addTodo', {
       uid: Date.now(),
       text,
-      done: false
+      done: false,
+      rangeDate: [new Date(), new Date()]
     })
   },
   removeTodo ({ commit }, todo) {
     commit('removeTodo', todo)
   },
-  editTodo ({ commit }, { todo, value }) {
+  removeCheckedTodo ({ commit, state }) {
+    const unchecked = state.todos.filter((item) => !item.done)
+    commit('removeCheckedTodo', unchecked)
+  },
+  editTodo ({ commit }, { todo, value, rangeDate }) {
     commit('editTodo', {
       todo,
-      text: value
+      text: value,
+      rangeDate
     })
   },
   toggleTodo ({ commit }, todo) {
@@ -52,7 +61,7 @@ const actions = {
     commit('checkedAllTodos', done)
   },
   clearCompleted ({ state, commit }) {
-    state.todo.filter(todo => todo.done)
+    state.todos.filter(todo => todo.done)
       .forEach(todo => {
         commit('removeTodo', todo)
       })
