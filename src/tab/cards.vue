@@ -1,16 +1,16 @@
 <template>
   <div class='cards-wrapper'>
     <div v-if="+card.value === 0" class="my-cards-wrapper">
-      <el-tabs class="card-tabs" tab-position="left">
-        <el-tab-pane :label="key" v-for="(itemCard, key) in localCardObject" :key="key">
+      <el-tabs v-model="currentMode" class="card-tabs" tab-position="left">
+        <el-tab-pane :label="key" :name="key" v-for="(itemCard, key) in localCardObject" :key="key">
           <draggable v-if="itemCard.length"
             class="dragArea list-group"
             tag="ul"
             :list="itemCard"
             v-bind="dragOptions"
-            @update="handleChangeCard"
+            @end="handleChangeEndCard"
           >
-            <transition-group class="item-list item-list111" type="transition" name="flip-list" tag="div">
+            <transition-group class="item-list" type="transition" name="flip-list" tag="div">
                 <div class="item-card"
                   :key="item.name"
                   v-for="(item, index) in itemCard"
@@ -124,6 +124,7 @@
 * 文件功能描述: 卡片
 */
 import draggable from 'vuedraggable'
+import { mapState, mapActions } from 'vuex'
 import { LOCAL_MINE_TAB_ITEMS, TAB_CONTENT, CARDS } from '../constants'
 import { storage } from '../utils'
 
@@ -142,7 +143,8 @@ export default {
     return {
       dialogEditMyTabVisible: false,
       editMyTabValue: '',
-      localCardObject: {}
+      localCardObject: {},
+      currentMode: '默认'
     }
   },
   watch: {
@@ -154,6 +156,11 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      cards: state => {
+        return state.workModule.cards
+      }
+    }),
     dragOptions () {
       return {
         animation: 0,
@@ -170,8 +177,20 @@ export default {
     }
   },
   methods: {
-    handleChangeCard (data) {
+    ...mapActions([
+      'setCards'
+    ]),
+    handleChangeEndCard (data) {
       console.log(data)
+      const { oldIndex, newIndex } = data
+      let items
+      if (+this.card.value === 0) {
+        items = this.cards[this.card.value][this.currentMode] || {}
+        const cache = items[oldIndex]
+        items[oldIndex] = items[newIndex]
+        items[newIndex] = cache
+        this.setCards(this.cards)
+      }
     },
     resetForm (val) {
       this.$emit('resetForm', val)

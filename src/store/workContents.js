@@ -49,6 +49,12 @@ const cardMutations = {
       state.cards[tabIndex].unshift(card)
     }
   },
+  setCards (state, cards) {
+    if (!cards) {
+      return
+    }
+    state.cards = cards
+  },
   removeCard (state, {
     tabIndex,
     cardIndex,
@@ -115,6 +121,9 @@ const cardActions = {
       vm.$message.error('添加异常')
       console.log(err)
     })
+  },
+  setCards ({ commit }, cards) {
+    commit('setCards', cards)
   },
   removeCard ({ commit }, {
     tabIndex,
