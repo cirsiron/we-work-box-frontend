@@ -22,9 +22,6 @@
           <div class="card-title">
             {{ item.name }}
           </div>
-          <!-- <div v-if="item.link" class="card-link">
-            <a :href="item.link" target="_blank">跳转链接</a>
-          </div> -->
           <div class="card-content">
             {{ item.content }}
           </div>
@@ -85,9 +82,6 @@
       @show="showDialog"
       @hide="hideDialog"
     />
-    <input type="file" ref="fileElem" style="display:none" @change="getBookmarkData">
-    <el-button ref="fileSelect" class="bookmark-btn" type="info" plain @click="importBookmark">上传书签</el-button>
-    <el-button class="reset-btn" type="info" plain @click="reset">重置页面</el-button>
   </div>
 </template>
 <script>
@@ -129,12 +123,40 @@ export default {
   },
   mounted () {
     this.fetchCards()
+    this.onBookMarks()
   },
   methods: {
     ...mapActions([
       'removeContent',
       'setContents'
     ]),
+    onBookMarks () {
+      this.$root.$on('setBookMarks', (data) => {
+        console.log(data)
+        const dataList = data.map(i => {
+          const link = i[1] || ''
+          const logo = i[2] || ''
+          const name = i[3] || ''
+          return {
+            name,
+            logo,
+            link,
+            content: name
+          }
+        })
+        if (!this.cardAllItems[0]) {
+          this.cardAllItems[0] = []
+        }
+        this.cardAllItems[0] = [
+          ...this.cardAllItems[0],
+          ...dataList
+        ]
+        this.cardAllItems = {
+          ...this.cardAllItems
+        }
+        storage.set(CARDS, this.cardAllItems)
+      })
+    },
     setValBool (bool) {
       this.hasVal = bool || false
       // 搜索框为空 重置搜索
@@ -169,11 +191,9 @@ export default {
     fetchCards () {
       fetchCard.query().then((res = []) => {
         const cards = this.transformCards(res)
-        const localMineItems = storage.get(LOCAL_MINE_TAB_ITEMS) || []
-        cards[0] = [
-          ...cards[0],
-          ...localMineItems
-        ]
+        const localMineItems = storage.get(LOCAL_MINE_TAB_ITEMS) || {}
+        // 合并本地 我的 tab中的数据
+        cards[0] = localMineItems
         this.cardAllItems = cards || {}
         // 本地同步存储
         storage.set(CARDS, this.cardAllItems)
@@ -208,63 +228,10 @@ export default {
         })
       })
     },
-    reset () {
-      this.$confirm('此操作将重置已选择的标签, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 重置 刷新
-        window.localStorage.removeItem(SHOW_TYPE)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-        window.location.reload()
-      })
-    },
     handleLink (link) {
       if (/http/.test(link)) {
         window.open(link)
       }
-    },
-    importBookmark () {
-      this.$refs.fileElem.click()
-    },
-    getBookmarkData ({ target }) {
-      if (!target.files[0]) {
-        return
-      }
-      const reader = new FileReader()
-      reader.readAsText(target.files[0], 'utf8')
-      reader.onload = () => {
-        console.log()
-        if (!reader.result) {
-          return
-        }
-        const markbooks = this.parserBookbarkToJson(reader.result)
-        console.log(markbooks)
-      }
-    },
-    matchAll (reg, str) {
-      let arr = []
-      let res = reg.exec(str)
-
-      if (reg.global) {
-        while (res) {
-          console.log(res)
-          arr.push(res)
-          res = reg.exec(str)
-        }
-      } else {
-        arr.push(res)
-      }
-      return arr
-    },
-    parserBookbarkToJson (html) {
-      const reg = /<DT><A (HREF="\S+")\s+[\S\s]+?(ICON="[\S\s]+?")?>((?:[\W\w]+?))<\/A>/g
-      const hrefs = this.matchAll(reg, html)
-      return hrefs
     }
   }
 }
@@ -284,7 +251,8 @@ body {
     position: relative;
     display: flex;
     justify-content: center;
-    .el-tabs {
+    height: calc(100vh - 92px);
+    & > .el-tabs {
       width: 68%;
       max-width: 960px;
       margin-top: 10px;
@@ -365,7 +333,9 @@ body {
         font-size: 16px;
         height: 40px;
         font-weight: 600;
-        line-height: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .card-content {
         max-height: 66px;
@@ -379,15 +349,6 @@ body {
           color: #409EFF;
         }
       }
-    }
-  }
-  .reset-btn {
-    position: fixed;
-    right: 10px;
-    bottom: 10px;
-    opacity: 0.4;
-    &:hover {
-      opacity: 1;
     }
   }
   .bookmark-btn {

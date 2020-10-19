@@ -37,6 +37,23 @@
         >查看日历</el-button>
       </div>
     </div>
+    <el-dropdown @command="handleMoreCommand">
+      <span class="el-dropdown-link">
+        <i class="el-icon-more"></i>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item command="importMark">
+          <input type="file" ref="fileElem" style="display:none" @change="getBookmarkData">
+          <span ref="fileSelect">上传书签</span>
+        </el-dropdown-item>
+        <el-dropdown-item command="exportData">
+          <span>导出数据</span>
+        </el-dropdown-item>
+        <el-dropdown-item command="reset">
+          <span>重置工作台</span>
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
   </div>
 </template>
 <script>
@@ -46,9 +63,10 @@
 */
 import { mapState } from 'vuex'
 import { saveAs } from 'file-saver'
+import jsonFormat from 'json-format'
 import { storage } from '../utils'
 import { fetchCard } from '../api'
-import jsonFormat from 'json-format'
+import { LOCAL_MINE_TAB_ITEMS, SHOW_TYPE } from '../constants'
 
 export default {
   data () {
@@ -86,6 +104,86 @@ export default {
         console.log(e)
       }
     },
+    handleMoreCommand (cmd) {
+      const cmdActions = {
+        'importMark': () => {
+          this.importBookmark()
+        },
+        'exportData': () => {
+          this.handleExport()
+        },
+        'reset': () => {
+          this.reset()
+        }
+      }
+      cmdActions[cmd] && cmdActions[cmd]()
+    },
+    importBookmark () {
+      this.$refs.fileElem.click()
+    },
+    matchAll (reg, str) {
+      let arr = []
+      let res = reg.exec(str)
+
+      if (reg.global) {
+        while (res) {
+          arr.push(res)
+          res = reg.exec(str)
+        }
+      } else {
+        arr.push(res)
+      }
+      return arr
+    },
+    parserBookbarkToJson (html) {
+      const reg = /<DT><A HREF="(\S+)"\s+[\S\s]+?ICON="([\S\s]+?)"?>((?:[\W\w]+?))<\/A>/g
+      const hrefs = this.matchAll(reg, html)
+      return hrefs
+    },
+    getBookmarkData ({ target }) {
+      if (!target.files[0]) {
+        return
+      }
+      const reader = new FileReader()
+      reader.readAsText(target.files[0], 'utf8')
+      reader.onload = () => {
+        if (!reader.result) {
+          return
+        }
+        const markbooks = this.parserBookbarkToJson(reader.result)
+        this.$root.$emit('setBookMarks', markbooks)
+      }
+    },
+    // 数据导出
+    handleExport () {
+      let data = {}
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i) // 获取本地存储的Key
+        const item = storage.get(key)
+        data[key] = item
+      }
+      const dataFormated = jsonFormat(data, {
+        type: 'space',
+        size: 2
+      })
+      const blob = new Blob([dataFormated], { type: 'text/json;charset=utf-8' })
+      saveAs(blob, '导出数据.json')
+    },
+    reset () {
+      this.$confirm('此操作将重置已选择的标签, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 重置 刷新
+        window.localStorage.removeItem(SHOW_TYPE)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+        window.location.reload()
+      })
+    },
     handleFocus () {
       const ele = this.$refs.input.$el
       ele.className = (ele.className || '').replace(/\s{2}/g, ' ')
@@ -102,6 +200,17 @@ export default {
         return
       }
       this.$emit('setValBool', true)
+
+      const localItems = storage.get(LOCAL_MINE_TAB_ITEMS) || {}
+      const allData = []
+      Object.keys(localItems).forEach(i => {
+        allData.push(i)
+      })
+      var reg = new RegExp(val, 'gi')
+      const filterItems = allData.filter(i => {
+        return reg.test(`${i.content}${i.name}`)
+      })
+
       fetchCard.query({
         q: val
       }).then((res) => {
@@ -112,9 +221,9 @@ export default {
             id: _id
           }
         })
-        this.$emit('setSearchItems', data)
+        this.$emit('setSearchItems', [...data, ...filterItems])
       }).catch((err) => {
-        this.$emit('setSearchItems', [])
+        this.$emit('setSearchItems', filterItems)
         console.log(err)
       })
     },
@@ -123,21 +232,6 @@ export default {
     },
     handleDrawerCalendar () {
       this.$emit('handleDrawerCalendar', true)
-    },
-    // 数据导出
-    handleExport () {
-      let data = {}
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i) // 获取本地存储的Key
-        const item = storage.get(key)
-        data[key] = item
-      }
-      const dataFormated = jsonFormat(data, {
-        type: 'space',
-        size: 2
-      })
-      const blob = new Blob([dataFormated], { type: 'text/json;charset=utf-8' })
-      saveAs(blob, '导出数据.json')
     }
   }
 }
@@ -148,6 +242,10 @@ export default {
   height: 80px;
   align-items: center;
   box-shadow: 0 10px 40px -10px #a2aeb933;
+  & > .el-dropdown {
+    left: -22px;
+    cursor: pointer;
+  }
   .logo-img {
     display: flex;
     position: relative;

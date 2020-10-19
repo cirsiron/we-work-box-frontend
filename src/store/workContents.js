@@ -37,18 +37,31 @@ const cardMutations = {
     tabIndex
   }) {
     if (!state.cards[tabIndex]) {
-      state.cards[tabIndex] = []
+      state.cards[tabIndex] = {}
     }
-    state.cards[tabIndex].unshift(card)
+    // 默认
+    if (+tabIndex === 0) {
+      if (!state.cards[tabIndex]['默认']) {
+        state.cards[tabIndex]['默认'] = []
+      }
+      state.cards[tabIndex]['默认'].unshift(card)
+    } else {
+      state.cards[tabIndex].unshift(card)
+    }
   },
   removeCard (state, {
     tabIndex,
-    cardIndex
+    cardIndex,
+    tabName
   }) {
     if (!state.cards[tabIndex]) {
       state.cards[tabIndex] = []
     }
-    state.cards[tabIndex].splice(cardIndex, 1)
+    if (tabName) {
+      state.cards[tabIndex][tabName].splice(cardIndex, 1)
+    } else {
+      state.cards[tabIndex].splice(cardIndex, 1)
+    }
   },
   editCard (state, { card, tabIndex, cardIndex }) {
     if (!state.cards[tabIndex]) {
@@ -69,7 +82,7 @@ const mutations = {
 }
 
 const cardActions = {
-  addCard ({ commit }, {
+  addCard ({ commit, state }, {
     card,
     tabIndex,
     callback
@@ -84,13 +97,13 @@ const cardActions = {
     // 筛选出 我的 项目不进行提交 直接存储本地
     let { type = [] } = card
     if (type.includes(0)) {
-      let mineTabItems = storage.get(LOCAL_MINE_TAB_ITEMS)
-      if (!mineTabItems) {
-        mineTabItems = []
-      }
-      mineTabItems.push(card)
-      storage.set(LOCAL_MINE_TAB_ITEMS, mineTabItems)
+      const { cards } = state
+      storage.set(LOCAL_MINE_TAB_ITEMS, cards[0] || {})
       type.splice(type.indexOf(0), 1)
+    }
+    if (type.length === 0) {
+      callback && callback()
+      return
     }
     fetchCard.add({
       ...card,
@@ -107,13 +120,16 @@ const cardActions = {
     tabIndex,
     cardIndex,
     callback,
-    id
+    id,
+    tabName
   }) {
     commit('removeCard', {
       tabIndex,
-      cardIndex
+      cardIndex,
+      tabName
     })
-    if (!id) {
+    if (!id || tabName) {
+      callback && callback()
       return
     }
     fetchCard.remove({

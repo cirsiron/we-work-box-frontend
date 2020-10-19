@@ -1,52 +1,121 @@
 <template>
   <div class='cards-wrapper'>
-    <div class="item-list"
-      v-if="itemCardList.length"
-    >
-      <div class="item-card"
-        :key="index"
-        v-for="(item, index) in itemCardList"
+    <div v-if="+card.value === 0" class="my-cards-wrapper">
+      <el-tabs class="card-tabs" tab-position="left">
+        <el-tab-pane :label="key" v-for="(itemCard, key) in localCardObject" :key="key">
+          <draggable v-if="itemCard.length"
+            class="dragArea list-group"
+            tag="ul"
+            :list="itemCard"
+            v-bind="dragOptions"
+            @update="handleChangeCard"
+          >
+            <transition-group class="item-list item-list111" type="transition" name="flip-list" tag="div">
+                <div class="item-card"
+                  :key="item.name"
+                  v-for="(item, index) in itemCard"
+                >
+                  <div class="card-mask"
+                    @click="handleLink(item.link)"
+                  ></div>
+                  <i class="item-card-icon el-icon-edit" @click="handleEditCard(item, index)"></i>
+                  <div class="card-pic">
+                    <img :src="item.logo || 'http://vit.hp.guahao-inc.com/favicon.ico'" alt="">
+                  </div>
+                  <div class="card-title">
+                    {{ item.name }}
+                  </div>
+                  <div class="card-content">
+                    {{ item.content }}
+                  </div>
+                </div>
+            </transition-group>
+          </draggable>
+          <div
+            v-else-if="isShow"
+            class="item-card my-add-item"
+            @click="handleAddCard()"
+          >
+            <i class="el-icon-plus"></i>
+          </div>
+          <div
+            v-else
+            class="no-data"
+          >
+            <slot>
+              oops! 暂无内容
+            </slot>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+
+      <el-button
+        class="tab-add"
+        size="small"
+        icon="el-icon-plus"
+        circle
+        plain
+        @click="handleAddMyTab"
       >
-        <div class="card-mask" 
-          @click="handleLink(item.link)"
-        ></div>
-        <i class="item-card-icon el-icon-edit" @click="handleEditCard(item, index)"></i>
-        <div class="card-pic">
-          <img :src="item.logo || 'http://vit.hp.guahao-inc.com/favicon.ico'" alt="">
+      </el-button>
+    </div>
+    <div v-else>
+      <div class="item-list"
+        v-if="+card.value !== 0 && itemCardList.length"
+      >
+        <div class="item-card"
+          :key="index"
+          v-for="(item, index) in itemCardList"
+        >
+          <div class="card-mask" 
+            @click="handleLink(item.link)"
+          ></div>
+          <i class="item-card-icon el-icon-edit" @click="handleEditCard(item, index)"></i>
+          <div class="card-pic">
+            <img :src="item.logo || 'http://vit.hp.guahao-inc.com/favicon.ico'" alt="">
+          </div>
+          <div class="card-title">
+            {{ item.name }}
+          </div>
+          <div class="card-content">
+            {{ item.content }}
+          </div>
         </div>
-        <div class="card-title">
-          {{ item.name }}
-        </div>
-        <!-- <div v-if="item.link" class="card-link">
-          <a :href="item.link" target="_blank">跳转链接</a>
-        </div> -->
-        <div class="card-content">
-          {{ item.content }}
+        <div
+          v-if="isShow"
+          class="item-card my-add-item"
+          @click="handleAddCard()"
+        >
+          <i class="el-icon-plus"></i>
         </div>
       </div>
       <div
-        v-if="isShow"
+        v-else-if="isShow"
         class="item-card my-add-item"
         @click="handleAddCard()"
       >
         <i class="el-icon-plus"></i>
       </div>
+      <div
+        v-else
+        class="no-data"
+      >
+        <slot>
+          oops! 暂无内容
+        </slot>
+      </div>
     </div>
-    <div
-      v-else-if="isShow"
-      class="item-card my-add-item"
-      @click="handleAddCard()"
+    <el-dialog
+      title="添加分类"
+      :visible.sync="dialogEditMyTabVisible"
+      width="30%"
     >
-      <i class="el-icon-plus"></i>
-    </div>
-    <div
-      v-else
-      class="no-data"
-    >
-      <slot>
-        oops! 暂无内容
-      </slot>
-    </div>
+      <el-input v-model="editMyTabValue" placeholder="分类名"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogEditMyTabVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleMyTabConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -54,35 +123,56 @@
 * Created by huanghui on 2020/10/13
 * 文件功能描述: 卡片
 */
-import { TAB_CONTENT } from '../constants'
+import draggable from 'vuedraggable'
+import { LOCAL_MINE_TAB_ITEMS, TAB_CONTENT, CARDS } from '../constants'
+import { storage } from '../utils'
 
 export default {
+  components: {
+    draggable
+  },
   props: {
     card: {
       type: Object,
       default: () => ({})
     },
-    data: {
-      type: Array,
-      default: () => []
-    }
+    data: [Object, Array]
   },
   data () {
-    return {}
+    return {
+      dialogEditMyTabVisible: false,
+      editMyTabValue: '',
+      localCardObject: {}
+    }
   },
   watch: {
+    data (val) {
+      if (+this.card.value !== 0) {
+        return []
+      }
+      this.localCardObject = val || {}
+    }
   },
   computed: {
+    dragOptions () {
+      return {
+        animation: 0,
+        group: 'description',
+        disabled: false,
+        ghostClass: 'ghost'
+      }
+    },
     itemCardList () {
-      return this.data
+      return this.data || []
     },
     isShow () {
       return +this.card.value === +TAB_CONTENT['我的'] // 如果是'我的'类型会显示，其他不显示
     }
   },
-  mounted () {
-  },
   methods: {
+    handleChangeCard (data) {
+      console.log(data)
+    },
     resetForm (val) {
       this.$emit('resetForm', val)
     },
@@ -108,12 +198,51 @@ export default {
       if (/http/.test(link)) {
         window.open(link)
       }
+    },
+    // 添加我的本地类型
+    handleAddMyTab () {
+      this.dialogEditMyTabVisible = true
+    },
+    handleMyTabConfirm () {
+      this.dialogEditMyTabVisible = false
+      this.localCardObject[this.editMyTabValue] = []
+      this.localCardObject = {
+        ...this.localCardObject
+      }
+      storage.set(LOCAL_MINE_TAB_ITEMS, this.localCardObject)
+      const data = storage.get(CARDS)
+      data[0] = this.localCardObject
+      storage.set(CARDS, data)
     }
   }
 }
 </script>
 <style lang='scss'>
 .cards-wrapper {
+  position: relative;
+  height: 100%;
+  .flip-list-move {
+    transition: transform 0.5s;
+  }
+  .my-cards-wrapper {
+    position: relative;
+    height: 98%;
+    .tab-add {
+      position: absolute;
+      top: 0px;
+      left: 70px;
+    }
+    .card-tabs {
+      .el-tabs__header {
+        width: 120px;
+        padding-top: 34px;
+      }
+      .el-tabs__content {
+        height: 100%;
+        overflow: auto;
+      }
+    }
+  }
   .no-data {
     text-align: center;
     margin: 100px;
@@ -140,10 +269,9 @@ export default {
       font-size: 16px;
       height: 40px;
       font-weight: 600;
-      line-height: 40px;
-    }
-    .card-type {
-
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .card-content {
       max-height: 46px;

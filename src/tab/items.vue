@@ -83,10 +83,7 @@ export default {
       type: Object,
       default: () => ({})
     },
-    data: {
-      type: Array,
-      default: () => []
-    }
+    data: [Object, Array]
   },
   data () {
     return {
@@ -94,11 +91,13 @@ export default {
       dialogCardVisible: false,
       // Card修改表单数据
       editCardForm: {
+        id: '',
         logo: '',
         name: '',
         link: '',
         type: [0],
-        content: ''
+        content: '',
+        tabName: '默认'
       },
       activeIndex: 1,
       rules: {
@@ -169,13 +168,18 @@ export default {
           fmd.append('hashValue', md5(event.target.result))
           fmd.append('categoryId', categoryId)
           fmd.append('file', files)
-          // this.editCardForm = fmd
         }
       }
     },
     // Card: 添加工作项
     fetchAddWork () {
-      const card = JSON.parse(JSON.stringify(this.editCardForm))
+      let card = JSON.parse(JSON.stringify(this.editCardForm))
+      if (+this.card.value === 0) {
+        card = JSON.parse(JSON.stringify({
+          ...this.editCardForm,
+          id: +new Date()
+        }))
+      }
       this.addCard({
         tabIndex: this.card.value,
         card,
@@ -188,13 +192,20 @@ export default {
     },
     // Card: 删除工作项
     fetchDeleteWork () {
-      const { id } = this.data[this.activeIndex]
+      const { tabName } = this.editCardForm
+      let id
+      if (tabName) {
+        id = this.data[tabName][this.activeIndex].id
+      } else {
+        id = this.data[this.activeIndex].id
+      }
       if (!id) {
         return
       }
       this.removeCard({
         tabIndex: this.card.value,
         cardIndex: this.activeIndex,
+        tabName,
         id,
         callback: () => {
           setTimeout(() => {
