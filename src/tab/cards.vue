@@ -298,8 +298,11 @@ export default {
     }
     .tabs-title-item {
       height: 80px;
-      line-height: 80px;
       padding-right: 6px;
+      overflow: hidden;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
       &.active {
         color: #409eff;
       }

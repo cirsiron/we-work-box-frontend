@@ -186,7 +186,7 @@ export default {
         type: 'warning'
       }).then(() => {
         // 重置 刷新
-        window.localStorage.removeItem(SHOW_TYPE)
+        localStorage.clear()
         this.$message({
           type: 'success',
           message: '删除成功!'
