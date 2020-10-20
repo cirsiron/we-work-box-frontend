@@ -3,8 +3,10 @@
   <Cards
     :data="data"
     :card="card"
+    :currentMode="currentMode"
     @resetForm="resetForm"
     @setActiveIndex="handleActiveIndex"
+    @setCurrentMode="handleCurrentMode"
     @onDialogCardVisible="handleDialogCardVisible"
     @onEditCardForm="handleEditCardForm"
   />
@@ -111,7 +113,8 @@ export default {
           { required: true, message: '请输入描述文字', trigger: 'blur' }
         ]
       },
-      editType: 1
+      editType: 1,
+      currentMode: '默认' // 我的 tab选中的值
     }
   },
   computed: {
@@ -143,6 +146,9 @@ export default {
       'removeCard',
       'editCard'
     ]),
+    handleCurrentMode (mode) {
+      this.currentMode = mode
+    },
     resetForm (editType = 1) {
       this.$refs.form.resetFields()
       this.editType = editType // 添加

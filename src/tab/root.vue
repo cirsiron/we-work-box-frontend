@@ -191,7 +191,9 @@ export default {
     fetchCards () {
       fetchCard.query().then((res = []) => {
         const cards = this.transformCards(res)
-        const localMineItems = storage.get(LOCAL_MINE_TAB_ITEMS) || {}
+        const localMineItems = storage.get(LOCAL_MINE_TAB_ITEMS) || {
+          '默认': []
+        }
         // 合并本地 我的 tab中的数据
         cards[0] = localMineItems
         this.cardAllItems = cards || {}

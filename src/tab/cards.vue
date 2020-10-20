@@ -1,19 +1,38 @@
 <template>
   <div class='cards-wrapper'>
     <div v-if="+card.value === 0" class="my-cards-wrapper">
-      <el-tabs v-model="currentMode" class="card-tabs" tab-position="left">
-        <el-tab-pane :label="key" :name="key" v-for="(itemCard, key) in localCardObject" :key="key">
-          <draggable v-if="itemCard.length"
-            class="dragArea list-group"
-            tag="ul"
-            :list="itemCard"
-            v-bind="dragOptions"
+      <div class="tabs-custom">
+        <div class="tabs-titles">
+          <div class="tabs-title-item" :class="currentMode === key ? 'active': null" v-for="(itemCard, key) in localCardObject" :key="key" @click="handleActiveTab(itemCard, key)">
+            <draggable
+              class="tabs-target-draggable"
+              :list="localCardObject[key]"
+              group="card-itmes"
+              @update="handleMoveUpdateCard"
+            >
+              {{ key }}
+            </draggable>
+          </div>
+          <el-button
+            class="tab-add"
+            size="small"
+            icon="el-icon-plus"
+            circle
+            plain
+            @click="handleAddMyTab"
+          >
+          </el-button>
+        </div>
+        <div class="tabs-content">
+          <draggable v-if="localCardObject[currentMode] && localCardObject[currentMode].length"
+            :group="{ name: 'card-itmes' }"
+            :list="localCardObject[currentMode]"
             @end="handleChangeEndCard"
           >
             <transition-group class="item-list" type="transition" name="flip-list" tag="div">
                 <div class="item-card"
                   :key="item.name"
-                  v-for="(item, index) in itemCard"
+                  v-for="(item, index) in localCardObject[currentMode]"
                 >
                   <div class="card-mask"
                     @click="handleLink(item.link)"
@@ -32,32 +51,13 @@
             </transition-group>
           </draggable>
           <div
-            v-else-if="isShow"
             class="item-card my-add-item"
             @click="handleAddCard()"
           >
             <i class="el-icon-plus"></i>
           </div>
-          <div
-            v-else
-            class="no-data"
-          >
-            <slot>
-              oops! 暂无内容
-            </slot>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
-
-      <el-button
-        class="tab-add"
-        size="small"
-        icon="el-icon-plus"
-        circle
-        plain
-        @click="handleAddMyTab"
-      >
-      </el-button>
+        </div>
+      </div>
     </div>
     <div v-else>
       <div class="item-list"
@@ -153,6 +153,16 @@ export default {
         return []
       }
       this.localCardObject = val || {}
+    },
+    localCardObject: {
+      handler (val) {
+        if (!val) {
+          return
+        }
+        this.cards[0] = val
+        this.setCards(this.cards)
+      },
+      deep: true
     }
   },
   computed: {
@@ -163,10 +173,8 @@ export default {
     }),
     dragOptions () {
       return {
-        animation: 0,
-        group: 'description',
-        disabled: false,
-        ghostClass: 'ghost'
+        animation: 0.2,
+        group: 'card-itmes'
       }
     },
     itemCardList () {
@@ -176,12 +184,27 @@ export default {
       return +this.card.value === +TAB_CONTENT['我的'] // 如果是'我的'类型会显示，其他不显示
     }
   },
+  mounted () {
+    if (this.card.value === '0') {
+      this.data && (this.localCardObject = this.data)
+    }
+  },
   methods: {
     ...mapActions([
       'setCards'
     ]),
+    handleMoveUpdateCard (e) {
+      console.log(e)
+      this.$nextTick(() => {
+        this.setCards({
+          ...this.cards
+        })
+      })
+    },
+    handleActiveTab (item, key) {
+      this.currentMode = key
+    },
     handleChangeEndCard (data) {
-      console.log(data)
       const { oldIndex, newIndex } = data
       let items
       if (+this.card.value === 0) {
@@ -240,17 +263,53 @@ export default {
 .cards-wrapper {
   position: relative;
   height: 100%;
+  .tabs-target-draggable {
+    position: relative;
+    .item-card {
+      position: absolute!important;
+      top: -50%!important;
+      left: -50%!important;
+      transform: scale(0.5)!important;
+    }
+  }
+  .tabs-custom {
+    display: flex;
+    height: 100%;
+    padding-top: 10px;
+    .tabs-titles {
+      padding: 0 10px;
+      width: 100px;
+      height: 100%;
+      overflow: hidden;
+      overflow-y: auto;
+      font-size: 14px;
+      text-align: right;
+      font-weight: 500;
+      color: #303133;
+      border-right: 1px solid #e4e7ed;
+      cursor: pointer;
+    }
+    .tabs-title-item {
+      height: 80px;
+      line-height: 80px;
+      padding-right: 6px;
+      &.active {
+        color: #409eff;
+      }
+    }
+    .tabs-content {
+      padding-left: 10px;
+    }
+    .tab-add {
+      margin-top: 10px;
+    }
+  }
   .flip-list-move {
     transition: transform 0.5s;
   }
   .my-cards-wrapper {
     position: relative;
     height: 98%;
-    .tab-add {
-      position: absolute;
-      top: 0px;
-      left: 70px;
-    }
     .card-tabs {
       .el-tabs__header {
         width: 120px;
