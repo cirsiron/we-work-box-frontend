@@ -107,6 +107,7 @@
     </div>
     <el-dialog
       title="添加分类"
+      :close-on-click-modal="false"
       :visible.sync="dialogEditMyTabVisible"
       width="30%"
     >
@@ -306,6 +307,8 @@ export default {
     .tabs-content {
       padding-left: 10px;
       flex: calc(100% - 100px);
+      height: 100%;
+      overflow: auto;
     }
     .tab-add {
       margin-top: 10px;
