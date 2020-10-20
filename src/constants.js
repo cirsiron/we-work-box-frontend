@@ -1,7 +1,7 @@
 
 export const SHOW_TYPE = 'SHOW_TYPE' // 展示项目类型
 
-export const STORAGE_TODO_KEY = 'TODO_LIST' // todo
+export const TODO_LIST = 'TODO_LIST' // todo
 export const WORK_CONTENTS = 'WORK_CONTENTS' // 工作项目
 
 export const CARDS = 'CARDS' // 工作卡片

@@ -1,7 +1,7 @@
-import { STORAGE_TODO_KEY } from '../constants'
+import { TODO_LIST } from '../constants'
 
 const state = {
-  todos: JSON.parse(window.localStorage.getItem(STORAGE_TODO_KEY) || '[]')
+  todos: JSON.parse(window.localStorage.getItem(TODO_LIST) || '[]')
 }
 
 const mutations = {

@@ -66,7 +66,7 @@ import { saveAs } from 'file-saver'
 import jsonFormat from 'json-format'
 import { storage } from '../utils'
 import { fetchCard } from '../api'
-import { LOCAL_MINE_TAB_ITEMS, SHOW_TYPE } from '../constants'
+import { LOCAL_MINE_TAB_ITEMS, SHOW_TYPE, CARDS, WORK_CONTENTS, TODO_LIST } from '../constants'
 
 export default {
   data () {
@@ -150,8 +150,18 @@ export default {
         if (!reader.result) {
           return
         }
-        const markbooks = this.parserBookbarkToJson(reader.result)
-        this.$root.$emit('setBookMarks', markbooks)
+        if (/\{[\s\S]+SHOW_TYPE/.test(reader.result)) {
+          const jsonRes = JSON.parse(reader.result)
+          jsonRes.SHOW_TYPE && storage.set(SHOW_TYPE, jsonRes.SHOW_TYPE)
+          jsonRes.CARDS && storage.set(CARDS, jsonRes.CARDS)
+          jsonRes.WORK_CONTENTS && storage.set(WORK_CONTENTS, jsonRes.WORK_CONTENTS)
+          jsonRes.LOCAL_MINE_TAB_ITEMS && storage.set(LOCAL_MINE_TAB_ITEMS, jsonRes.LOCAL_MINE_TAB_ITEMS)
+          jsonRes.TODO_LIST && storage.set(TODO_LIST, jsonRes.TODO_LIST)
+          window.location.reload()
+        } else {
+          const markbooks = this.parserBookbarkToJson(reader.result)
+          markbooks && markbooks.length && this.$root.$emit('setBookMarks', markbooks)
+        }
       }
     },
     // 数据导出
