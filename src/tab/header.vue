@@ -202,9 +202,9 @@ export default {
       this.$emit('setValBool', true)
 
       const localItems = storage.get(LOCAL_MINE_TAB_ITEMS) || {}
-      const allData = []
+      let allData = []
       Object.keys(localItems).forEach(i => {
-        allData.concat(localItems[i] || [])
+        allData = allData.concat(localItems[i] || [])
       })
       var reg = new RegExp(val, 'gi')
       const filterItems = allData.filter(i => {

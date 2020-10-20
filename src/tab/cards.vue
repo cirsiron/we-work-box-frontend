@@ -243,9 +243,15 @@ export default {
     },
     // 添加我的本地类型
     handleAddMyTab () {
+      this.editMyTabValue = ''
       this.dialogEditMyTabVisible = true
     },
     handleMyTabConfirm () {
+      const value = this.editMyTabValue.replace(/^\s*|\s*$/g, '')
+      if (!value) {
+        this.$message.warning('请输入tab标签名称')
+        return false
+      }
       this.dialogEditMyTabVisible = false
       this.localCardObject[this.editMyTabValue] = []
       this.localCardObject = {
@@ -299,6 +305,7 @@ export default {
     }
     .tabs-content {
       padding-left: 10px;
+      flex: calc(100% - 100px);
     }
     .tab-add {
       margin-top: 10px;

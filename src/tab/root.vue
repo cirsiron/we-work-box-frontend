@@ -132,7 +132,6 @@ export default {
     ]),
     onBookMarks () {
       this.$root.$on('setBookMarks', (data) => {
-        console.log(data)
         const dataList = data.map(i => {
           const link = i[1] || ''
           const logo = i[2] || ''
@@ -141,16 +140,21 @@ export default {
             name,
             logo,
             link,
+            id: `${+new Date()}${String(Math.random()).slice(2, 8)}`,
+            tabName: '默认',
             content: name
           }
         })
         if (!this.cardAllItems[0]) {
-          this.cardAllItems[0] = []
+          this.cardAllItems[0] = {}
         }
-        this.cardAllItems[0] = [
+        this.cardAllItems[0] = {
           ...this.cardAllItems[0],
-          ...dataList
-        ]
+          '默认': [
+            ...(this.cardAllItems[0]['默认'] || []),
+            ...dataList
+          ]
+        }
         this.cardAllItems = {
           ...this.cardAllItems
         }

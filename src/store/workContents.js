@@ -69,11 +69,18 @@ const cardMutations = {
       state.cards[tabIndex].splice(cardIndex, 1)
     }
   },
-  editCard (state, { card, tabIndex, cardIndex }) {
+  editCard (state, { card, tabIndex, cardIndex, tabName }) {
     if (!state.cards[tabIndex]) {
       state.cards[tabIndex] = []
     }
-    state.cards[tabIndex].splice(cardIndex, 1, card)
+
+    if (tabName) {
+      if (state.cards[tabIndex][tabName]) {
+        state.cards[tabIndex][tabName].splice(cardIndex, 1, card)
+      }
+    } else {
+      state.cards[tabIndex].splice(cardIndex, 1, card)
+    }
   }
 }
 
@@ -156,13 +163,19 @@ const cardActions = {
     cardIndex,
     card,
     id,
+    tabName,
     callback
   }) {
     commit('editCard', {
       tabIndex,
       cardIndex,
-      card
+      card,
+      tabName
     })
+    if (!id || tabName) {
+      callback && callback()
+      return
+    }
     // 远程更新
     fetchCard.modify({
       id,

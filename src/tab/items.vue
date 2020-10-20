@@ -222,12 +222,19 @@ export default {
       this.dialogCardVisible = false
     },
     fetchModifyWork () {
-      const { id } = this.data[this.activeIndex]
+      const { tabName } = this.editCardForm
+      let id
+      if (tabName) {
+        id = this.data[tabName][this.activeIndex].id
+      } else {
+        id = this.data[this.activeIndex].id
+      }
       if (!id) {
         return
       }
       this.editCard({
         id,
+        tabName,
         tabIndex: this.card.value,
         cardIndex: this.activeIndex,
         card: JSON.parse(JSON.stringify(this.editCardForm)),
