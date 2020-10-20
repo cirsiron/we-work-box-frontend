@@ -75,6 +75,7 @@ import md5 from 'md5'
 import { mapActions } from 'vuex'
 import { TAB_CONTENT, TAB_CONTENT_LIST } from '../constants'
 import Cards from './cards'
+import { storage } from '../utils'
 
 export default {
   components: {
@@ -119,7 +120,15 @@ export default {
   },
   computed: {
     tabContents () {
-      return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
+      if (storage.get('ROOT_NAME') === 'admin') {
+        return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
+      }
+      return [
+        {
+          name: '我的',
+          value: 0
+        }
+      ]
     },
     itemCardList () {
       return this.data
