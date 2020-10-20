@@ -204,13 +204,12 @@ export default {
       const localItems = storage.get(LOCAL_MINE_TAB_ITEMS) || {}
       const allData = []
       Object.keys(localItems).forEach(i => {
-        allData.push(i)
+        allData.concat(localItems[i] || [])
       })
       var reg = new RegExp(val, 'gi')
       const filterItems = allData.filter(i => {
         return reg.test(`${i.content}${i.name}`)
       })
-
       fetchCard.query({
         q: val
       }).then((res) => {
