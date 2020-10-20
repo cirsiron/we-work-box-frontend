@@ -120,7 +120,7 @@ export default {
   },
   computed: {
     tabContents () {
-      if (storage.get('ROOT_NAME') === 'admin') {
+      if (storage.get('ROOT') === 'admin') {
         return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
       }
       return [

@@ -161,9 +161,19 @@ export default {
           return
         }
         this.cards[0] = val
+        const localItems = {}
+        Object.keys(val).forEach(i => {
+          const item = val[i]
+          localItems[i] = item.map(ii => {
+            return {
+              ...ii,
+              tabName: i
+            }
+          })
+        })
+        this.cards[0] = localItems
         this.setCards(this.cards)
-      },
-      deep: true
+      }
     }
   },
   computed: {
