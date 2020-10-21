@@ -179,6 +179,20 @@ const cardActions = {
       callback && callback()
       return
     }
+    if (/\d+/.test(id) && String(id).length === 13) {
+      delete card.id
+      fetchCard.add({
+        ...card,
+        type
+      }).then(() => {
+        vm.$message.success('添加成功')
+        callback && callback()
+      }).catch((err) => {
+        vm.$message.error('添加异常')
+        console.log(err)
+      })
+      return
+    }
     if (id) {
       // 远程更新
       fetchCard.modify({
