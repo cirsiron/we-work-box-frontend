@@ -204,10 +204,11 @@ export default {
           tabName: this.currentMode
         }))
       }
+      const isMyTab = this.card.value === '0'
       this.addCard({
         tabIndex: this.card.value,
         card,
-        tabName: this.currentMode,
+        tabName: isMyTab ? this.currentMode : null,
         callback: () => {
           this.handleEmitFetchCards()
         }
@@ -215,8 +216,11 @@ export default {
     },
     // Card: 删除工作项
     fetchDeleteWork () {
-      const { tabName } = this.editCardForm
+      let tabName = this.editCardForm.tabName
       let id
+      if (this.card.value !== '0') {
+        tabName = null
+      }
       if (tabName) {
         id = this.data[tabName][this.activeIndex].id
       } else {
@@ -237,8 +241,11 @@ export default {
       this.dialogCardVisible = false
     },
     fetchModifyWork () {
-      const { tabName } = this.editCardForm
+      let tabName = this.editCardForm.tabName
       let id
+      if (this.card.value !== '0') {
+        tabName = null
+      }
       if (tabName) {
         id = this.data[tabName][this.activeIndex].id
       } else {
