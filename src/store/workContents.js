@@ -34,17 +34,17 @@ const state = {
 const cardMutations = {
   addCard (state, {
     card,
-    tabIndex
+    tabIndex,
+    tabName = '默认'
   }) {
     if (!state.cards[tabIndex]) {
       state.cards[tabIndex] = {}
     }
-    // 默认
     if (+tabIndex === 0) {
-      if (!state.cards[tabIndex]['默认']) {
-        state.cards[tabIndex]['默认'] = []
+      if (!state.cards[tabIndex][tabName]) {
+        state.cards[tabIndex][tabName] = []
       }
-      state.cards[tabIndex]['默认'].unshift(card)
+      state.cards[tabIndex][tabName].unshift(card)
     } else {
       state.cards[tabIndex].unshift(card)
     }
@@ -97,14 +97,16 @@ const cardActions = {
   addCard ({ commit, state }, {
     card,
     tabIndex,
-    callback
+    callback,
+    tabName
   }) {
     if (!card) {
       return
     }
     commit('addCard', {
       card,
-      tabIndex
+      tabIndex,
+      tabName
     })
     // 筛选出 我的 项目不进行提交 直接存储本地
     let { type = [] } = card
@@ -113,7 +115,8 @@ const cardActions = {
       storage.set(LOCAL_MINE_TAB_ITEMS, cards[0] || {})
       type.splice(type.indexOf(0), 1)
     }
-    if (type.length === 0) {
+
+    if (type.length === 0 || tabName) {
       callback && callback()
       return
     }

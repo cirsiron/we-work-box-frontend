@@ -198,12 +198,14 @@ export default {
       if (+this.card.value === 0) {
         card = JSON.parse(JSON.stringify({
           ...this.editCardForm,
-          id: +new Date()
+          id: +new Date(),
+          tabName: this.currentMode
         }))
       }
       this.addCard({
         tabIndex: this.card.value,
         card,
+        tabName: this.currentMode,
         callback: () => {
           this.handleEmitFetchCards()
         }

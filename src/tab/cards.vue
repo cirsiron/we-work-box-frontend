@@ -145,14 +145,14 @@ export default {
       type: Object,
       default: () => ({})
     },
-    data: [Object, Array]
+    data: [Object, Array],
+    currentMode: String
   },
   data () {
     return {
       dialogEditMyTabVisible: false,
       editMyTabValue: '',
       localCardObject: {},
-      currentMode: '默认',
       isShowRemoveIcon: false
     }
   },
@@ -168,7 +168,6 @@ export default {
         if (!val) {
           return
         }
-        this.cards[0] = val
         const localItems = {}
         Object.keys(val).forEach(i => {
           const item = val[i]
@@ -202,6 +201,9 @@ export default {
     },
     isShow () {
       return +this.card.value === +TAB_CONTENT['我的'] // 如果是'我的'类型会显示，其他不显示
+    },
+    isShowEditIcon () {
+      return Object.keys(this.localCardObject || {}).length > 1
     }
   },
   mounted () {
@@ -221,7 +223,7 @@ export default {
       this.setCards(this.cards)
       this.$emit('onEmitFetchCards', 10)
       setTimeout(() => {
-        this.currentMode = '默认'
+        this.$emit('setCurrentMode', '默认')
       })
     },
     handleMoveUpdateCard (e) {
@@ -232,7 +234,7 @@ export default {
       })
     },
     handleActiveTab (item, key) {
-      this.currentMode = key
+      this.$emit('setCurrentMode', key)
     },
     handleChangeEndCard (data) {
       const { oldIndex, newIndex } = data
@@ -291,6 +293,7 @@ export default {
       const data = storage.get(CARDS)
       data[0] = this.localCardObject
       storage.set(CARDS, data)
+      this.setCards(data)
     }
   }
 }
