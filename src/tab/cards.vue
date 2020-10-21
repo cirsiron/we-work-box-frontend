@@ -282,7 +282,7 @@ export default {
       this.dialogEditMyTabVisible = true
     },
     handleMyTabConfirm () {
-      const value = this.editMyTabValue.replace(/^\s*|\s*$/g, '')
+      const value = this.editMyTabValue.replace(/(^\s*)|(\s*$)/g, '')
       if (!value) {
         this.$message.warning('请输入tab标签名称')
         return false

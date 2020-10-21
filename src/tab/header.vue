@@ -204,7 +204,7 @@ export default {
       ele.className = ele.className.replace(/focus/g, '')
     },
     handleSearch () {
-      const val = this.searchVal.replace(/^\s*|\s*$/g, '')
+      const val = this.searchVal.replace(/(^\s*)|(\s*$)/g, '')
       if (!val) {
         this.$emit('setValBool', false)
         return
