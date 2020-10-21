@@ -179,7 +179,8 @@ const cardActions = {
       callback && callback()
       return
     }
-    if (/\d+/.test(id) && String(id).length === 13) {
+    const idLength = 19
+    if (/\d+/.test(id) && String(id).length === idLength) {
       delete card.id
       fetchCard.add({
         ...card,

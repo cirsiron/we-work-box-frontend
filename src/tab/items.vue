@@ -200,7 +200,7 @@ export default {
       if (+this.card.value === 0) {
         card = JSON.parse(JSON.stringify({
           ...this.editCardForm,
-          id: +new Date(),
+          id: `${+new Date()}${String(Math.random()).slice(2, 8)}`,
           tabName: this.currentMode
         }))
       }
