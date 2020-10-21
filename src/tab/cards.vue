@@ -14,7 +14,7 @@
             >
               <span>{{ key }}</span>
               <span
-                v-if="isShowRemoveIcon"
+                v-if="isShowRemoveIcon && key !== '默认'"
                 class="el-icon-circle-close"
                 @click="handleRemoveMyTab(key)"
               ></span>
@@ -220,6 +220,9 @@ export default {
       delete this.cards[0][key]
       this.setCards(this.cards)
       this.$emit('onEmitFetchCards', 10)
+      setTimeout(() => {
+        this.currentMode = '默认'
+      })
     },
     handleMoveUpdateCard (e) {
       this.$nextTick(() => {
