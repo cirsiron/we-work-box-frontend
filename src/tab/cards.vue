@@ -215,11 +215,12 @@ export default {
     handleShowRemoveIcon (flag) {
       this.isShowRemoveIcon = flag
     },
-    handleRemoveMyTab () {
-      console.log(111)
+    handleRemoveMyTab (key) {
+      delete this.cards[0][key]
+      this.setCards(this.cards)
+      // location.reload()
     },
     handleMoveUpdateCard (e) {
-      console.log(e)
       this.$nextTick(() => {
         this.setCards({
           ...this.cards
