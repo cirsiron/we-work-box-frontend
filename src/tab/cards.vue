@@ -218,7 +218,7 @@ export default {
     handleRemoveMyTab (key) {
       delete this.cards[0][key]
       this.setCards(this.cards)
-      // location.reload()
+      this.$emit('onEmitFetchCards', 10)
     },
     handleMoveUpdateCard (e) {
       this.$nextTick(() => {
@@ -295,13 +295,15 @@ export default {
 .cards-wrapper {
   position: relative;
   height: 100%;
+
+  .el-icon-circle-close {
+    position: absolute;
+    right: -14px;
+    top: -4px;
+  }
   .tabs-target-draggable {
     position: relative;
-    .el-icon-circle-close {
-      position: absolute;
-      right: -14px;
-      top: -4px;
-    }
+    height: 100%;
     .item-card {
       position: absolute!important;
       top: -50%!important;
@@ -314,7 +316,7 @@ export default {
     height: 100%;
     padding-top: 10px;
     .tabs-titles {
-      padding: 0 10px;
+      padding: 0 10px 0 0;
       width: 100px;
       height: 100%;
       overflow: hidden;
@@ -328,6 +330,7 @@ export default {
     }
     .tabs-title-item {
       height: 80px;
+      padding: 4px 0;
       padding-right: 13px;
       overflow: hidden;
       display: flex;

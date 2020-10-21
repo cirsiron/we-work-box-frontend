@@ -9,6 +9,7 @@
     @setCurrentMode="handleCurrentMode"
     @onDialogCardVisible="handleDialogCardVisible"
     @onEditCardForm="handleEditCardForm"
+    @onEmitFetchCards="handleEmitFetchCards"
   />
   <el-dialog
     v-if="itemCardList"
@@ -186,6 +187,11 @@ export default {
         }
       }
     },
+    handleEmitFetchCards (delay = 1000) {
+      setTimeout(() => {
+        this.$emit('fetchCards')
+      }, delay)
+    },
     // Card: 添加工作项
     fetchAddWork () {
       let card = JSON.parse(JSON.stringify(this.editCardForm))
@@ -199,9 +205,7 @@ export default {
         tabIndex: this.card.value,
         card,
         callback: () => {
-          setTimeout(() => {
-            this.$emit('fetchCards')
-          }, 1000)
+          this.handleEmitFetchCards()
         }
       })
     },
@@ -223,9 +227,7 @@ export default {
         tabName,
         id,
         callback: () => {
-          setTimeout(() => {
-            this.$emit('fetchCards')
-          }, 1000)
+          this.handleEmitFetchCards()
         }
       })
       this.dialogCardVisible = false
@@ -248,9 +250,7 @@ export default {
         cardIndex: this.activeIndex,
         card: JSON.parse(JSON.stringify(this.editCardForm)),
         callback: () => {
-          setTimeout(() => {
-            this.$emit('fetchCards')
-          }, 1000)
+          this.handleEmitFetchCards()
         }
       })
     },
