@@ -1,9 +1,8 @@
 
 import Vue from 'vue'
-import { CARDS, TAB_CONTENT_LIST, SHOW_TYPE, LOCAL_MINE_TAB_ITEMS } from '../constants'
+import { CARDS, TAB_CONTENT_LIST, SHOW_TYPE } from '../constants'
 import workContents from '../../mock/workContents.js'
 import { fetchCard } from '../api'
-import { storage } from '../utils'
 
 const vm = new Vue()
 
@@ -111,12 +110,10 @@ const cardActions = {
     // 筛选出 我的 项目不进行提交 直接存储本地
     let { type = [] } = card
     if (type.includes(0)) {
-      const { cards } = state
-      storage.set(LOCAL_MINE_TAB_ITEMS, cards[0] || {})
       type.splice(type.indexOf(0), 1)
     }
 
-    if (type.length === 0 || tabName) {
+    if (type.length === 0 && tabName) {
       callback && callback()
       return
     }
@@ -130,9 +127,6 @@ const cardActions = {
       vm.$message.error('添加异常')
       console.log(err)
     })
-  },
-  setCards ({ commit }, cards) {
-    commit('setCards', cards)
   },
   removeCard ({ commit }, {
     tabIndex,
@@ -174,21 +168,37 @@ const cardActions = {
       card,
       tabName
     })
-    if (!id || tabName) {
+    // 是否上传数据
+    // 筛选出 我的 项目不进行提交 直接存储本地
+    let { type = [] } = card
+    if (type.includes(0)) {
+      type.splice(type.indexOf(0), 1)
+    }
+
+    if (type.length === 0 && tabName) {
       callback && callback()
       return
     }
-    // 远程更新
-    fetchCard.modify({
-      id,
-      card
-    }).then((res) => {
-      vm.$message.success('更新成功')
+    if (id) {
+      // 远程更新
+      fetchCard.modify({
+        id,
+        card
+      }).then((res) => {
+        vm.$message.success('更新成功')
+        callback && callback()
+      }).catch((err) => {
+        vm.$message.success('更新异常')
+        console.log(err)
+      })
+      return
+    }
+    if (!id || tabName) {
       callback && callback()
-    }).catch((err) => {
-      vm.$message.success('更新异常')
-      console.log(err)
-    })
+    }
+  },
+  setCards ({ commit }, cards) {
+    commit('setCards', cards)
   }
 }
 
