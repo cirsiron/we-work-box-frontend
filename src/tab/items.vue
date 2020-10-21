@@ -76,7 +76,7 @@ import md5 from 'md5'
 import { mapActions } from 'vuex'
 import { TAB_CONTENT, TAB_CONTENT_LIST } from '../constants'
 import Cards from './cards'
-import { storage } from '../utils'
+// import { storage } from '../utils'
 
 export default {
   components: {
@@ -121,15 +121,17 @@ export default {
   },
   computed: {
     tabContents () {
-      if (storage.get('ROOT') === 'admin') {
-        return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
-      }
-      return [
-        {
-          name: '我的',
-          value: 0
-        }
-      ]
+      return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
+      // TODO: 权限管理 后面根据需要打开
+      // if (storage.get('ROOT') === 'admin') {
+      //   return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
+      // }
+      // return [
+      //   {
+      //     name: '我的',
+      //     value: 0
+      //   }
+      // ]
     },
     itemCardList () {
       return this.data

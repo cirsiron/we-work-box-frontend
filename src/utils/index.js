@@ -2,7 +2,11 @@ export const storage = {
   get (name) {
     const data = localStorage.getItem(name)
     if (data) {
-      return JSON.parse(localStorage.getItem(name))
+      try {
+        return JSON.parse(localStorage.getItem(name))
+      } catch (e) {
+        return data
+      }
     }
     return null
   },
