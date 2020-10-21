@@ -1,6 +1,8 @@
 <template>
   <div class='cards-wrapper'>
     <div v-if="+card.value === 0" class="my-cards-wrapper">
+      <span v-if="!isShowRemoveIcon" class="el-icon-edit-outline" @click="handleShowRemoveIcon(true)"></span>
+      <span v-else class="el-icon-circle-check" @click="handleShowRemoveIcon(false)"></span>
       <div class="tabs-custom">
         <div class="tabs-titles">
           <div class="tabs-title-item" :class="currentMode === key ? 'active': null" v-for="(itemCard, key) in localCardObject" :key="key" @click="handleActiveTab(itemCard, key)">
@@ -10,7 +12,12 @@
               group="card-itmes"
               @update="handleMoveUpdateCard"
             >
-              {{ key }}
+              <span>{{ key }}</span>
+              <span
+                v-if="isShowRemoveIcon"
+                class="el-icon-circle-close"
+                @click="handleRemoveMyTab(key)"
+              ></span>
             </draggable>
           </div>
           <el-button
@@ -145,7 +152,8 @@ export default {
       dialogEditMyTabVisible: false,
       editMyTabValue: '',
       localCardObject: {},
-      currentMode: '默认'
+      currentMode: '默认',
+      isShowRemoveIcon: false
     }
   },
   watch: {
@@ -204,6 +212,12 @@ export default {
     ...mapActions([
       'setCards'
     ]),
+    handleShowRemoveIcon (flag) {
+      this.isShowRemoveIcon = flag
+    },
+    handleRemoveMyTab () {
+      console.log(111)
+    },
     handleMoveUpdateCard (e) {
       console.log(e)
       this.$nextTick(() => {
@@ -282,6 +296,11 @@ export default {
   height: 100%;
   .tabs-target-draggable {
     position: relative;
+    .el-icon-circle-close {
+      position: absolute;
+      right: -14px;
+      top: -4px;
+    }
     .item-card {
       position: absolute!important;
       top: -50%!important;
@@ -308,7 +327,7 @@ export default {
     }
     .tabs-title-item {
       height: 80px;
-      padding-right: 6px;
+      padding-right: 13px;
       overflow: hidden;
       display: flex;
       justify-content: flex-end;
@@ -333,6 +352,14 @@ export default {
   .my-cards-wrapper {
     position: relative;
     height: 98%;
+    & > .el-icon-edit-outline, & > .el-icon-circle-check {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 10;
+      font-size: 16px;
+      cursor: pointer;
+    }
     .card-tabs {
       .el-tabs__header {
         width: 120px;
