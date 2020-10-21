@@ -38,7 +38,7 @@
           >
             <transition-group class="item-list" type="transition" name="flip-list" tag="div">
                 <div class="item-card"
-                  :key="item.name"
+                  :key="item.id || item.name"
                   v-for="(item, index) in localCardObject[currentMode]"
                 >
                   <div class="card-mask"
@@ -181,7 +181,8 @@ export default {
         })
         this.cards[0] = localItems
         this.setCards(this.cards)
-      }
+      },
+      deep: true
     }
   },
   computed: {
@@ -251,7 +252,10 @@ export default {
       this.$nextTick(() => {
         const edit = 2
         this.resetForm(edit)
-        this.$emit('onEditCardForm', JSON.parse(JSON.stringify(item)))
+        this.$emit('onEditCardForm', JSON.parse(JSON.stringify({
+          ...item,
+          tabName: this.currentMode
+        })))
       })
     },
     // 新增
@@ -280,9 +284,6 @@ export default {
       }
       this.dialogEditMyTabVisible = false
       this.localCardObject[this.editMyTabValue] = []
-      this.localCardObject = {
-        ...this.localCardObject
-      }
       storage.set(LOCAL_MINE_TAB_ITEMS, this.localCardObject)
       const data = storage.get(CARDS)
       data[0] = this.localCardObject

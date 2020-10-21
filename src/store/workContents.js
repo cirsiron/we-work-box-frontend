@@ -73,7 +73,6 @@ const cardMutations = {
     if (!state.cards[tabIndex]) {
       state.cards[tabIndex] = []
     }
-
     if (tabName) {
       if (state.cards[tabIndex][tabName]) {
         state.cards[tabIndex][tabName].splice(cardIndex, 1, card)
