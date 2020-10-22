@@ -156,7 +156,7 @@ export default {
     },
     filterTodos (todos, day) {
       return todos.filter(i => {
-        let [rangeDate0, rangeDate1] = i.rangeDate || []
+        let [rangeDate0 = '', rangeDate1 = ''] = i.rangeDate || []
         const startDate = (rangeDate0.match(/\d+-\d+-\d+/g) || [])[0]
         const endDate = (rangeDate1.match(/\d+-\d+-\d+/g) || [])[0]
         if (!startDate || !endDate) {

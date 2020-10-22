@@ -30,11 +30,13 @@ const mutations = {
 
 const actions = {
   addTodo ({ commit }, text) {
+    const date = new Date()
+    const dateObj = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
     commit('addTodo', {
       uid: Date.now(),
       text,
       done: false,
-      rangeDate: [new Date(), new Date()]
+      rangeDate: [dateObj, dateObj]
     })
   },
   removeTodo ({ commit }, todo) {

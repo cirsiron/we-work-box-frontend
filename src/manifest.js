@@ -1,7 +1,7 @@
 
 module.exports = {
   name: '工作台',
-  version: '0.0.1',
+  version: '0.1.0',
   description: '为开发者打造更顺手的工作流',
   author: 'huanghui',
   manifest_version: 2,
