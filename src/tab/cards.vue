@@ -176,6 +176,8 @@ export default {
               ...ii,
               tabName: i
             }
+          }).filter(iii => {
+            return iii.id && iii.name
           })
         })
         this.cards[0] = localItems
