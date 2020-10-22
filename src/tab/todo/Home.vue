@@ -25,13 +25,14 @@
               <el-date-picker
                 class="todo-date-picker"
                 v-model="item.rangeDate"
-                @change="(date) => handleEditDateTodo({item, date})"
-                type="datetimerange"
+                type="daterange"
                 value-format="yyyy-MM-dd"
                 range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="截止日期"
-                align="right">
+                align="right"
+                @change="(date) => handleEditDateTodo({item, date})"
+              >
               </el-date-picker>
             </div>
         </div>

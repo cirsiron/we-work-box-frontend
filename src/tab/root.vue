@@ -64,14 +64,28 @@
       :withHeader="false"
       :visible.sync="drawerShow"
       direction="rtl"
-      size="40%"
+      size="80%"
     >
       <el-calendar>
         <template
           slot="dateCell"
           slot-scope="{ data }">
-          <p :class="data.isSelected ? 'is-selected' : ''">
-            {{ data.day.split('-').slice(1).join('-') }} {{ data.isSelected ? '✔️' : ''}}
+          <p class="custom-name" :class="data.isSelected ? 'is-selected' : ''">
+            {{ data.day.split('-').slice(1).join('-') }}
+            <span v-if="filterTodos(todos, data.day).length">
+              <p>待办事项：</p>
+              <p class="todo-content" :key="i.id" v-for="(i) in filterTodos(todos, data.day)">
+                <el-popover
+                  placement="top-start"
+                  width="200"
+                  trigger="hover"
+                  :content="filterTodos(todos, data.day).map(dayItem => dayItem.text).reduce((val, cur) => val + ' ' + cur)"
+                  @hide="handleRemoveWhenHide"
+                >
+                  <span slot="reference">{{ i.text }}</span>
+                </el-popover>
+              </p>
+            </span>
           </p>
         </template>
       </el-calendar>
@@ -119,6 +133,9 @@ export default {
     },
     isFirstShow () {
       return !(window.localStorage.getItem(SHOW_TYPE))
+    },
+    todos () {
+      return this.$store.state.todoModule.todos
     }
   },
   mounted () {
@@ -130,6 +147,27 @@ export default {
       'removeContent',
       'setContents'
     ]),
+    handleRemoveWhenHide () {
+      const els = document.getElementsByClassName('el-popover')
+      for (let i = 0; i < els.length; i++) {
+        const curEl = els[i]
+        curEl.parentNode.removeChild(curEl)
+      }
+    },
+    filterTodos (todos, day) {
+      return todos.filter(i => {
+        let [rangeDate0, rangeDate1] = i.rangeDate || []
+        const startDate = (rangeDate0.match(/\d+-\d+-\d+/g) || [])[0]
+        const endDate = (rangeDate1.match(/\d+-\d+-\d+/g) || [])[0]
+        if (!startDate || !endDate) {
+          return false
+        }
+        const startTime = +new Date(startDate)
+        const endTime = +new Date(endDate)
+        const dayTime = +new Date(day)
+        return startTime <= dayTime && endTime >= dayTime
+      })
+    },
     onBookMarks () {
       this.$root.$on('setBookMarks', (data) => {
         const dataList = data.map(i => {
@@ -253,6 +291,18 @@ body {
 }
 .root-wrapper {
   margin-top: 12px;
+  .el-calendar-day {
+    .custom-name {
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+  .todo-content {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-all;
+  }
   .content-wrapper {
     position: relative;
     display: flex;
