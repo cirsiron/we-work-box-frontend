@@ -73,7 +73,6 @@
           <p class="custom-name" :class="data.isSelected ? 'is-selected' : ''">
             {{ data.day.split('-').slice(1).join('-') }}
             <span v-if="filterTodos(todos, data.day).length">
-              <p>待办事项：</p>
               <p class="todo-content" :key="i.id" v-for="(i) in filterTodos(todos, data.day)">
                 <el-popover
                   placement="top-start"
@@ -302,6 +301,10 @@ body {
     text-overflow: ellipsis;
     overflow: hidden;
     word-break: break-all;
+    width: 100%;
+    background: #d9e4dd;
+    color: #303133;
+    padding: 1px 4px;
   }
   .content-wrapper {
     position: relative;

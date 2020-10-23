@@ -86,6 +86,9 @@ export default {
     // 是否全部完成
     allChecked: {
       get () {
+        if (this.todos.length === 0) {
+          return false
+        }
         return this.todos.every(todo => todo.done)
       },
       set (checked) {
