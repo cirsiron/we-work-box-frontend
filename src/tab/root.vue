@@ -322,7 +322,7 @@ body {
       background: rgba(255,255,255,0.8);
       border-radius: 10px;
       .el-tabs__content {
-        padding: 0 16px;
+        padding: 0 10px;
       }
       .is-closable {
         .el-icon-close {

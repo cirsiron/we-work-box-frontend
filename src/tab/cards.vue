@@ -12,7 +12,7 @@
               group="card-itmes"
               @update="handleMoveUpdateCard"
             >
-              <span>{{ key }}</span>
+              {{ key }}
               <span
                 v-if="isShowRemoveIcon && key !== '默认'"
                 class="el-icon-circle-close"
@@ -313,6 +313,7 @@ export default {
   .tabs-target-draggable {
     position: relative;
     height: 100%;
+    text-align: center;
     .item-card {
       position: absolute!important;
       top: -50%!important;
@@ -340,10 +341,9 @@ export default {
     .tabs-title-item {
       height: 80px;
       padding: 4px 0;
-      padding-right: 13px;
       overflow: hidden;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-around;
       align-items: center;
       &.active {
         color: #409eff;
