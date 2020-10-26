@@ -21,7 +21,7 @@
         <div class="todo-item-wrapper" :key="index" v-for="(item, index) in todos">
             <div class="todo-item">
               <el-checkbox :value="item.done" @change="toggleTodo(item)"></el-checkbox>
-              <el-input :value="item.text" @input="(val) => editTodo({ todo: item, value: val })"></el-input>
+              <el-input class="todo-input" type="textarea" autosize :value="item.text" @input="(val) => editTodo({ todo: item, value: val })"></el-input>
               <el-date-picker
                 class="todo-date-picker"
                 v-model="item.rangeDate"
@@ -160,6 +160,15 @@ export default {
       border-radius: 4px;
       padding: 21px 21px 0 21px;
       border: 1px solid #DCDFE6;
+      .todo-input {
+        position: relative;
+        z-index: 100;
+        margin-left: 6px;
+        width: calc(100% - 239px);
+        textarea {
+          min-height: 40px!important;
+        }
+      }
     }
   }
   .todo-done-progress {
@@ -176,8 +185,8 @@ export default {
     margin-bottom: 8px;
     .todo-date-picker {
       position: absolute;
+      top: 0;
       right: 0;
-      bottom: 0;
       width: 220px;
       padding: 3px;
       .el-range-separator {

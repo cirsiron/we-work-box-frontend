@@ -23,3 +23,11 @@
     - 数据库：elasticsearch
   - 部署:
     - docker
+
+### TODO
+  - 支持个人自定义的数据云端存储同步
+  - 
+
+### 开发
+  - 注意构建是与node版本号有关 node-sass
+  

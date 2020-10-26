@@ -305,6 +305,7 @@ body {
     background: #d9e4dd;
     color: #303133;
     padding: 1px 4px;
+    margin-bottom: 2px;
   }
   .content-wrapper {
     position: relative;

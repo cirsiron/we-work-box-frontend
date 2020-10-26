@@ -56,7 +56,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="描述" prop="content">
-        <el-input type="textarea" v-model="editCardForm.content" autocomplete="off"></el-input>
+        <el-input type="textarea" autosize v-model="editCardForm.content" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
