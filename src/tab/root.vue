@@ -343,6 +343,7 @@ body {
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.8);
       align-content: flex-start;
+      overflow: auto;
       .item-card {
         position: relative;
         flex: 1;

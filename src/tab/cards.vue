@@ -1,25 +1,33 @@
 <template>
   <div class='cards-wrapper'>
+    <!-- 我的 tab项目 -->
     <div v-if="+card.value === 0" class="my-cards-wrapper">
       <span v-if="!isShowRemoveIcon" class="el-icon-edit-outline" @click="handleShowRemoveIcon(true)"></span>
       <span v-else class="el-icon-circle-check" @click="handleShowRemoveIcon(false)"></span>
       <div class="tabs-custom">
         <div class="tabs-titles">
-          <div class="tabs-title-item" :class="currentMode === key ? 'active': null" v-for="(itemCard, key) in localCardObject" :key="key" @click="handleActiveTab(itemCard, key)">
-            <draggable
-              class="tabs-target-draggable"
-              :list="localCardObject[key]"
-              group="card-itmes"
-              @update="handleMoveUpdateCard"
+          <draggable v-model="localCardList" @start="drag=true" @end="drag=false">
+            <div class="tabs-title-item"
+              :class="currentMode === key ? 'active': null"
+              v-for="(itemCard, key) in localCardObject"
+              :key="key"
+              @click="handleActiveTab(itemCard, key)"
             >
-              {{ key }}
-              <span
-                v-if="isShowRemoveIcon && key !== '默认'"
-                class="el-icon-circle-close"
-                @click="handleRemoveMyTab(key)"
-              ></span>
-            </draggable>
-          </div>
+              <draggable
+                class="tabs-target-draggable"
+                :list="localCardObject[key]"
+                group="card-itmes"
+                @update="handleMoveUpdateCard"
+              >
+                {{ key }}
+                <span
+                  v-if="isShowRemoveIcon && key !== '默认'"
+                  class="el-icon-circle-close"
+                  @click="handleRemoveMyTab(key)"
+                ></span>
+              </draggable>
+            </div>
+          </draggable>
           <el-button
             class="tab-add"
             size="small"
@@ -206,6 +214,26 @@ export default {
     },
     isShowEditIcon () {
       return Object.keys(this.localCardObject || {}).length > 1
+    },
+    localCardList: {
+      get () {
+        return Object.keys(this.data || {}).map(i => {
+          return {
+            key: i,
+            value: this.data[i]
+          }
+        })
+      },
+      set (list) {
+        let obj = {}
+        list.forEach(i => {
+          console.log(i)
+          obj[i.key] = i.value 
+        })
+        this.cards[0] = obj
+        this.setCards(this.cards)
+        this.$emit('onEmitFetchCards', 10)
+      }
     }
   },
   mounted () {
