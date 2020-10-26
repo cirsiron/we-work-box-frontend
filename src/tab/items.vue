@@ -109,7 +109,7 @@ export default {
           { required: true, message: '请输入名称或关键字', trigger: 'blur' }
         ],
         type: [
-          { type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change' }
+          { type: 'array', required: true, message: '请至少选择一个类型', trigger: 'change' }
         ],
         content: [
           { required: true, message: '请输入描述文字', trigger: 'blur' }
