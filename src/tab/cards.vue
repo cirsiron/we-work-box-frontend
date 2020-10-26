@@ -335,12 +335,13 @@ export default {
 
   .el-icon-circle-close {
     position: absolute;
-    right: -14px;
-    top: -4px;
+    right: -2px;
+    top: -2px;
   }
   .tabs-target-draggable {
     position: relative;
     height: 100%;
+    line-height: 3em;
     text-align: center;
     .item-card {
       position: absolute!important;
@@ -360,7 +361,7 @@ export default {
       overflow: hidden;
       overflow-y: auto;
       font-size: 14px;
-      text-align: right;
+      text-align: center;
       font-weight: 500;
       color: #303133;
       border-right: 1px solid #e4e7ed;
