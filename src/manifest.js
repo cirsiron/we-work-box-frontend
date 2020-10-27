@@ -18,15 +18,8 @@ module.exports = {
   'content_security_policy': "script-src 'self' 'unsafe-eval'; object-src 'self'",
   'web_accessible_resources': ['*'],
   browser_action: {
-    default_title: '工作台',
-    default_popup: 'pages/popup.html'
+    default_title: '工作台'
   },
-  // content_scripts: [{
-  //   js: [ 'js/popup.js' ],
-  //   run_at: 'document_end',
-  //   matches: ['<all_urls>'],
-  //   all_frames: true
-  // }],
   // 覆盖浏览器默认页面
   chrome_url_overrides: {
     newtab: 'pages/app.html'

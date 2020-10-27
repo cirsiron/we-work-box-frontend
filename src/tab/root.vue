@@ -140,12 +140,35 @@ export default {
   mounted () {
     this.fetchCards()
     this.onBookMarks()
+    this.handleIntro()
   },
   methods: {
     ...mapActions([
       'removeContent',
       'setContents'
     ]),
+    handleIntro () {
+      const IS_INTRO = 'IS_INTRO'
+      const isIntro = storage.get(IS_INTRO)
+      if (isIntro) {
+        return
+      }
+      this.$intro().setOptions({
+        prevLabel: '上一步',
+        nextLabel: '下一步',
+        skipLabel: '跳过',
+        doneLabel: '结束',
+        /* 是否使用键盘Esc退出 */
+        exitOnEsc: false,
+        exitOnOverlayClick: false
+      }).oncomplete(function () {
+          //点击跳过按钮后执行的事件
+          storage.set(IS_INTRO, true)
+      }).onexit(function () {
+          //点击结束按钮后， 执行的事件
+          storage.set(IS_INTRO, true)
+      }).start() // start the guide
+    },
     handleRemoveWhenHide () {
       const els = document.getElementsByClassName('el-popover')
       for (let i = 0; i < els.length; i++) {

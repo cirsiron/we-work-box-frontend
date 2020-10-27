@@ -7,39 +7,49 @@
       </div>
       <div class="todo-btn">
         <el-badge :value="todoCount" class="item">
-          <el-button
-            round
-            size="small"
-            @click="handleDrawerTodo"
-          >今日待办</el-button>
+          <div v-intro="'添加/查看todolist'">
+            <el-button
+              round
+              size="small"
+              @click="handleDrawerTodo"
+            >今日待办</el-button>
+          </div>
         </el-badge>
       </div>
     </div>
     <div class="search">
-      <el-input
-        id="search-input"
-        ref="input"
-        clearable
-        placeholder="输入关键字进行搜索"
-        prefix-icon="el-icon-search"
-        v-model="searchVal"
-        @focus="handleFocus"
-        @blur="handleBlur"
-        @input="handleSearch"
-      />
+      <div class="input-infro" v-intro="'输入关键字进行搜索'" v-intro-step="3">
+        <el-input
+          id="search-input"
+          ref="input"
+          clearable
+          placeholder="输入关键字进行搜索"
+          prefix-icon="el-icon-search"
+          v-model="searchVal"
+          @focus="handleFocus"
+          @blur="handleBlur"
+          @input="handleSearch"
+        />
+      </div>
     </div>
     <div class="user">
       <div class="calendar-btn">
-        <el-button
-          round
-          size="small"
-          @click="handleDrawerCalendar"
-        >查看日历</el-button>
+        <div v-intro="'查看日历与todo联动'" v-intro-step="2">
+          <el-button
+            round
+            size="small"
+            @click="handleDrawerCalendar"
+          >
+            查看日历
+          </el-button>
+        </div>
       </div>
     </div>
     <el-dropdown @command="handleMoreCommand">
       <span class="el-dropdown-link">
-        <i class="el-icon-more"></i>
+        <div v-intro="'更多功能操作,浏览器书签/本地数据的导入导出'"  v-intro-step="4">
+          <i class="el-icon-more"></i>
+        </div>
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="importMark">
@@ -280,8 +290,11 @@ export default {
   }
   .search {
     width: calc(100% - 400px);
-    display: flex;
-    justify-content: center;
+    .input-infro {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
     .el-input {
       width: 80%;
       text-align: center;

@@ -26,8 +26,16 @@
 
 ### TODO
   - 支持个人自定义的数据云端存储同步
-  - 
+  - 支持模块 可搜索/分享模块并加关注（用于团队间的内容，与端分类区分）
 
 ### 开发
-  - 注意构建是与node版本号有关 node-sass
-  
+  ```bash
+  #安装
+    npm i
+  # 开发
+    npm run dev
+  # 线上代码
+    npm run prod
+  ```
+
+![整体架构示意图.png](https://img01.sogoucdn.com/app/a/100520146/dc0a2449bfb810a81cd6da214745584b)

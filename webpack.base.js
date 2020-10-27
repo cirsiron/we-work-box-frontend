@@ -1,5 +1,4 @@
 const path = require('path')
-const ChromeReloadPlugin = require('wcer')
 const webpack = require('webpack')
 const {cssLoaders, htmlPage} = require('./core/tools')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
@@ -7,9 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 let resolve = dir => path.join(__dirname, 'src', dir)
 module.exports = {
   entry: {
-    tab: resolve('./tab'),
-    popup: resolve('./popup'),
-    inject: resolve('./content')
+    tab: resolve('./tab')
   },
   output: {
     path: path.join(__dirname, 'build'),
@@ -86,11 +83,10 @@ module.exports = {
   },
   plugins: [
     htmlPage('工作台', 'app', ['manifest', 'vendor', 'tab']),
-    htmlPage('popup', 'popup', ['popup']),
     new CopyWebpackPlugin([{ from: path.join(__dirname, 'static') }]),
-    new ChromeReloadPlugin({
-      port: 9090,
-      manifest: path.join(__dirname, 'src', 'manifest.js')
+    new webpack.ProvidePlugin({
+      // other modules
+      introJs: ['intro.js']
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',

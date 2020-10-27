@@ -2,8 +2,10 @@
   <div class='cards-wrapper'>
     <!-- 我的 tab项目 -->
     <div v-if="+card.value === 0" class="my-cards-wrapper">
-      <span v-if="!isShowRemoveIcon" class="el-icon-edit-outline" @click="handleShowRemoveIcon(true)"></span>
-      <span v-else class="el-icon-circle-check" @click="handleShowRemoveIcon(false)"></span>
+      <div v-intro="'自定义分类编辑'" v-intro-step="5">
+        <span v-if="!isShowRemoveIcon" class="el-icon-edit-outline" @click="handleShowRemoveIcon(true)"></span>
+        <span v-else class="el-icon-circle-check" @click="handleShowRemoveIcon(false)"></span>
+      </div>
       <div class="tabs-custom">
         <div class="tabs-titles">
           <draggable v-model="localCardList" @start="drag=true" @end="drag=false">
@@ -28,15 +30,18 @@
               </draggable>
             </div>
           </draggable>
-          <el-button
-            class="tab-add"
-            size="small"
-            icon="el-icon-plus"
-            circle
-            plain
-            @click="handleAddMyTab"
-          >
-          </el-button>
+
+          <div v-intro="'添加自定义分类'" v-intro-step="6">
+            <el-button
+              class="tab-add"
+              size="small"
+              icon="el-icon-plus"
+              circle
+              plain
+              @click="handleAddMyTab"
+            >
+            </el-button>
+          </div>
         </div>
         <div class="tabs-content">
           <draggable v-if="localCardObject[currentMode] && localCardObject[currentMode].length"
