@@ -283,7 +283,7 @@ export default {
   }
 }
 </script>
-<style lang='scss'>
+<style lang='less'>
 .items-wrapper {
   overflow: auto;
   height: calc(100vh - 180px);

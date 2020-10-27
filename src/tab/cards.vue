@@ -327,7 +327,7 @@ export default {
   }
 }
 </script>
-<style lang='scss'>
+<style lang='less'>
 .cards-wrapper {
   position: relative;
   height: 100%;

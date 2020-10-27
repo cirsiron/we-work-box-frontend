@@ -130,7 +130,7 @@ export default {
   }
 }
 </script>
-<style lang='scss'>
+<style lang='less'>
 .home-wrapper {
   .todo-flex {
     display: flex;

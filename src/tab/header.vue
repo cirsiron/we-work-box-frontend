@@ -245,7 +245,7 @@ export default {
   }
 }
 </script>
-<style lang='scss'>
+<style lang='less'>
 .header-wrapper {
   display: flex;
   height: 80px;

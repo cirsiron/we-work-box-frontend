@@ -1,6 +1,9 @@
-<template lang="pug">
-    div
-      el-button(type="primary" @click="tab") New tab 
+<template>
+    <div>
+      <el-button type="primary" @click="tab">
+        New tab
+      </el-button>
+    </div>
 </template>
 <script>
   export default {
@@ -16,7 +19,7 @@
     }
   }
 </script>
-<style lang="scss">
+<style lang="less">
   div {
     color: blue
   }

@@ -120,7 +120,7 @@ export default {
   }
 }
 </script>
-<style lang='scss'>
+<style lang='less'>
 .el-dialog {
   width: 700px !important;
 }
