@@ -54,7 +54,7 @@
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="importMark">
           <input type="file" ref="fileElem" style="display:none" @change="getBookmarkData">
-          <span ref="fileSelect">上传书签</span>
+          <span ref="fileSelect">解析书签</span>
         </el-dropdown-item>
         <el-dropdown-item command="exportData">
           <span>导出数据</span>
