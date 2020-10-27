@@ -15,5 +15,11 @@ export const storage = {
       return
     }
     localStorage.setItem(name, JSON.stringify(data))
+  },
+  remove (name) {
+    if (!name) {
+      return
+    }
+    localStorage.removeItem(name)
   }
 }

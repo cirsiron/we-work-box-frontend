@@ -265,6 +265,7 @@ export default {
         const content = this.contents.filter(i => i.value === name)
         content && this.removeContent(content[0])
         this.contentsValue = this.contents[0].value
+        storage.remove('SHOW_TYPE')
         this.$message({
           type: 'success',
           message: '删除成功!'
