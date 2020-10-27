@@ -227,7 +227,6 @@ export default {
       set (list) {
         let obj = {}
         list.forEach(i => {
-          console.log(i)
           obj[i.key] = i.value 
         })
         this.cards[0] = obj
