@@ -369,6 +369,7 @@ body {
       align-content: flex-start;
       overflow: auto;
       .item-card {
+        overflow: hidden;
         position: relative;
         flex: 1;
         flex-grow: 1;

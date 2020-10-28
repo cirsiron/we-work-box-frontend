@@ -232,7 +232,7 @@ export default {
       set (list) {
         let obj = {}
         list.forEach(i => {
-          obj[i.key] = i.value 
+          i && (obj[i.key] = i.value) 
         })
         this.cards[0] = obj
         this.setCards(this.cards)
@@ -345,7 +345,6 @@ export default {
   .tabs-target-draggable {
     position: relative;
     height: 100%;
-    line-height: 3em;
     text-align: center;
     .item-card {
       position: absolute!important;
