@@ -345,6 +345,7 @@ export default {
   .tabs-target-draggable {
     position: relative;
     height: 100%;
+    padding-top: 10px;
     text-align: center;
     .item-card {
       position: absolute!important;
