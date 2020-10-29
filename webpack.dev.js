@@ -15,7 +15,7 @@ module.exports = merge(baseWebpack, {
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new ChromeReloadPlugin({
-      port: 9090,
+      port: 9098,
       manifest: path.join(__dirname, 'src', 'manifest.js')
     }),
     new webpack.DefinePlugin({

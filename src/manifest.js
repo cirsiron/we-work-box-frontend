@@ -10,6 +10,7 @@ module.exports = {
     '128': 'icons/16.png'
   },
   permissions: [
+    'bookmarks',
     'tabs',
     'storage',
     'http://*/',

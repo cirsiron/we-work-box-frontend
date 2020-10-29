@@ -150,6 +150,30 @@ export default {
       const hrefs = this.matchAll(reg, html)
       return hrefs
     },
+    printBookmarks (bookmarks, bookmarkList) {
+      bookmarks.forEach(function(bookmark) {
+        const { id, title, url }= bookmark
+        url && bookmarkList.push({
+          id,
+          title,
+          url
+        })
+        if (bookmark.children) {
+          this.printBookmarks(bookmark.children, bookmarkList)
+        }
+      })
+    },
+    // TODO:
+    async getBookmark () {
+      if (chrome.bookmarks) {
+        return await chrome.bookmarks.getTree(function(bookmarks) {
+          let bookmarkList = []
+          printBookmarks(bookmarks, bookmarkList)
+          console.log(bookmarkList)
+        })
+      }
+      return []
+    },
     getBookmarkData ({ target }) {
       if (!target.files[0]) {
         return
