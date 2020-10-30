@@ -76,11 +76,10 @@
               <p class="todo-content" :key="i.id" v-for="(i) in filterTodos(todos, data.day)">
                 <el-popover
                   placement="top-start"
-                  width="200"
                   trigger="hover"
-                  :content="filterTodos(todos, data.day).map(dayItem => dayItem.text).reduce((val, cur) => val + ' ' + cur)"
                   @hide="handleRemoveWhenHide"
                 >
+                  <div class="popover-content" v-html="handlePopoverContent(todos, data.day)"></div>
                   <span slot="reference">{{ i.text }}</span>
                 </el-popover>
               </p>
@@ -150,6 +149,17 @@ export default {
       'setContents',
       'setCards'
     ]),
+    handlePopoverContent (todos, data) {
+      const todoTextList = this.filterTodos(todos, data)
+        .map(dayItem => dayItem.text)
+      if (todoTextList.length === 1) {
+        return `<p class="popover-content-line">${todoTextList[0]}</p>`
+      }
+      return todoTextList
+        .reduce((val, cur) => {
+          return `<p class="popover-content-line">${val}</p>` + `<p class="popover-content-line">${cur}</p>`
+        })
+    },
     handleItemData (item, type) {
       return item[type]
     },
@@ -316,6 +326,12 @@ export default {
 }
 body {
   background-image: radial-gradient(ellipse farthest-corner at center top, #fff 0%, #e4e4e4 100%);
+}
+.popover-content-line {
+  margin: 4px 0;
+  padding: 2px 4px;
+  background: #8bcdcd;
+  color: #fff;
 }
 .root-wrapper {
   margin-top: 12px;
