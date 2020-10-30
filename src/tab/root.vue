@@ -46,7 +46,7 @@
           :name="item.value"
           :closable="item.closable"
         >
-          <Items :card="item" :data="cardAllItems[item.value]" @fetchCards="fetchCards"/>
+          <Items :card="item" :data="handleItemData(cards, item.value)" @fetchCards="fetchCards"/>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -118,7 +118,6 @@ export default {
   },
   data: () => ({
     hasVal: false, // 搜索框是否有值
-    cardAllItems: {},
     searchItems: [], // 搜索的
     contentsValue: '0',
     centerDialogVisible: true,
@@ -135,6 +134,9 @@ export default {
     },
     todos () {
       return this.$store.state.todoModule.todos
+    },
+    cards () {
+      return this.$store.state.workModule.cards
     }
   },
   mounted () {
@@ -145,8 +147,12 @@ export default {
   methods: {
     ...mapActions([
       'removeContent',
-      'setContents'
+      'setContents',
+      'setCards'
     ]),
+    handleItemData (item, type) {
+      return item[type]
+    },
     handleIntro () {
       const IS_INTRO = 'IS_INTRO'
       const isIntro = storage.get(IS_INTRO)
@@ -205,20 +211,18 @@ export default {
             content: name
           }
         })
-        if (!this.cardAllItems[0]) {
-          this.cardAllItems[0] = {}
+        if (!this.cards[0]) {
+          this.cards[0] = {}
         }
-        this.cardAllItems[0] = {
-          ...this.cardAllItems[0],
+        this.cards[0] = {
+          ...this.cards[0],
           '默认': [
-            ...(this.cardAllItems[0]['默认'] || []),
+            ...(this.cards[0]['默认'] || []),
             ...dataList
           ]
         }
-        this.cardAllItems = {
-          ...this.cardAllItems
-        }
-        storage.set(CARDS, this.cardAllItems)
+        storage.set(CARDS, this.cards)
+        this.setCards(this.cards)
       })
     },
     setValBool (bool) {
@@ -260,9 +264,10 @@ export default {
         }
         // 合并本地 我的 tab中的数据
         cards[0] = localMineItems
-        this.cardAllItems = cards || {}
+        const cardObj = cards || {}
         // 本地同步存储
-        storage.set(CARDS, this.cardAllItems)
+        storage.set(CARDS, cardObj)
+        this.setCards(cardObj)
       }).catch((err) => {
         console.log(err)
       })

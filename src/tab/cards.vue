@@ -11,13 +11,13 @@
           <draggable v-model="localCardList" @start="drag=true" @end="drag=false">
             <div class="tabs-title-item"
               :class="currentMode === key ? 'active': null"
-              v-for="(itemCard, key) in localCardObject"
+              v-for="(itemCard, key) in data"
               :key="key"
               @click="handleActiveTab(itemCard, key)"
             >
               <draggable
                 class="tabs-target-draggable"
-                :list="localCardObject[key]"
+                :list="data[key]"
                 group="card-itmes"
                 @update="handleMoveUpdateCard"
               >
@@ -44,15 +44,15 @@
           </div>
         </div>
         <div class="tabs-content">
-          <draggable v-if="localCardObject[currentMode] && localCardObject[currentMode].length"
+          <draggable v-if="data[currentMode] && data[currentMode].length"
             :group="{ name: 'card-itmes' }"
-            :list="localCardObject[currentMode]"
+            :list="data[currentMode]"
             @end="handleChangeEndCard"
           >
             <transition-group class="item-list" type="transition" name="flip-list" tag="div">
                 <div class="item-card"
                   :key="item.id || item.name"
-                  v-for="(item, index) in localCardObject[currentMode]"
+                  v-for="(item, index) in data[currentMode]"
                 >
                   <div class="card-mask"
                     @click="handleLink(item.link)"
@@ -165,38 +165,7 @@ export default {
     return {
       dialogEditMyTabVisible: false,
       editMyTabValue: '',
-      localCardObject: {},
       isShowRemoveIcon: false
-    }
-  },
-  watch: {
-    data (val) {
-      if (+this.card.value !== 0) {
-        return []
-      }
-      this.localCardObject = val || {}
-    },
-    localCardObject: {
-      handler (val) {
-        if (!val) {
-          return
-        }
-        const localItems = {}
-        Object.keys(val).forEach(i => {
-          const item = val[i]
-          localItems[i] = item.map(ii => {
-            return {
-              ...ii,
-              tabName: i
-            }
-          }).filter(iii => {
-            return iii.id && iii.name
-          })
-        })
-        this.cards[0] = localItems
-        this.setCards(this.cards)
-      },
-      deep: true
     }
   },
   computed: {
@@ -218,11 +187,11 @@ export default {
       return +this.card.value === +TAB_CONTENT['我的'] // 如果是'我的'类型会显示，其他不显示
     },
     isShowEditIcon () {
-      return Object.keys(this.localCardObject || {}).length > 1
+      return Object.keys(this.data || {}).length > 1
     },
     localCardList: {
       get () {
-        return Object.keys(this.data || {}).map(i => {
+        return Object.keys(this.cards[0] || {}).map(i => {
           return {
             key: i,
             value: this.data[i]
@@ -232,7 +201,8 @@ export default {
       set (list) {
         let obj = {}
         list.forEach(i => {
-          i && (obj[i.key] = i.value) 
+          const key = (i.key || '').replace(/^\s+|\s$/, '')
+          i && (obj[key] = i.value) 
         })
         this.cards[0] = obj
         this.setCards(this.cards)
@@ -241,9 +211,6 @@ export default {
     }
   },
   mounted () {
-    if (this.card.value === '0') {
-      this.data && (this.localCardObject = this.data)
-    }
   },
   methods: {
     ...mapActions([
@@ -321,11 +288,15 @@ export default {
         this.$message.warning('请输入tab标签名称')
         return false
       }
+      if (/^\d+/.test(value)) {
+        this.$message.warning('tab标签名称开头不能为数值')
+        return false
+      }
       this.dialogEditMyTabVisible = false
-      this.localCardObject[this.editMyTabValue] = []
-      storage.set(LOCAL_MINE_TAB_ITEMS, this.localCardObject)
+      this.data[this.editMyTabValue] = []
+      storage.set(LOCAL_MINE_TAB_ITEMS, this.data)
       const data = storage.get(CARDS)
-      data[0] = this.localCardObject
+      data[0] = this.data
       storage.set(CARDS, data)
       this.setCards(data)
     }

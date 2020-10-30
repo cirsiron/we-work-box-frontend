@@ -73,10 +73,9 @@
 * 文件功能描述:
 */
 import md5 from 'md5'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { TAB_CONTENT, TAB_CONTENT_LIST } from '../constants'
 import Cards from './cards'
-// import { storage } from '../utils'
 
 export default {
   components: {
@@ -120,6 +119,11 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      cards: state => {
+        return state.workModule.cards
+      }
+    }),
     tabContents () {
       return JSON.parse(JSON.stringify(TAB_CONTENT_LIST))
       // TODO: 权限管理 后面根据需要打开
